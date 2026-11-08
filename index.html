@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photobooth Hàn Quốc ✨ Chụp Ảnh Lấy Liền</title>
+  <title>Chụp Photobooth Online ✨</title>
   <!-- Favicon from original repository -->
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Panbap/anh/refs/heads/main/icon1.png" />
 
@@ -637,14 +637,14 @@
           <div class="truncate">
             <div class="flex items-center gap-2">
               <span class="font-display text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-pinky-400 via-pinky-500 to-purple-400 bg-clip-text text-transparent truncate">
-                LTT Photobooth
+                Photobooth eTr365
               </span>
               <span class="inline-block text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-pinky-100 text-pinky-600 border border-pinky-200">
-                Life4Cuts ✨
+                ltt.technicall ✨
               </span>
             </div>
             <p class="text-xs text-pinky-600/80 font-medium truncate">
-              Tiệm chụp ảnh Hàn Quốc lấy liền siêu xinh
+              Chụp Photobooth Online siêu tiện lợi :3
             </p>
           </div>
         </a>
@@ -696,7 +696,7 @@
         <div class="inline-flex items-center">
           <a
             id="facebookProfileLink"
-            href="https://www.facebook.com/your.username"
+            href="https://www.facebook.com/ltt.technicall"
             target="_blank"
             rel="noopener noreferrer"
             class="fb-btn px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold flex items-center gap-2 rounded-l-full"
@@ -707,12 +707,7 @@
             </svg>
             <span>Facebook</span>
           </a>
-          <button
-            onclick="openFacebookModal()"
-            class="bg-[#1558d6] hover:bg-blue-800 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-r-full ml-0.5 transition shadow-sm"
-            title="Dán hoặc đổi link Facebook cá nhân của bạn"
-          >
-            <i class="fa-solid fa-pen-to-square text-xs"></i>
+            
           </button>
         </div>
 
@@ -798,7 +793,7 @@
             class="cute-btn-locked flex-1 sm:flex-initial justify-center px-4 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-base font-bold flex items-center gap-1.5"
           >
             <i class="fa-solid fa-lock text-sm"></i>
-            <span id="step1NextBtnLabel"> Chọn 1 bố cục để tiếp tục</span>
+            <span id="step1NextBtnLabel">🔒 Chọn 1 bố cục để tiếp tục</span>
           </button>
         </div>
       </div>
@@ -1088,7 +1083,7 @@
               class="w-full cute-btn-locked py-3.5 px-5 text-sm sm:text-base font-bold flex items-center justify-center gap-2"
             >
               <i id="toStep3BtnIcon" class="fa-solid fa-lock text-sm"></i>
-              <span id="toStep3BtnLabel"> Chụp đủ ảnh để mở khóa (0/4)</span>
+              <span id="toStep3BtnLabel">🔒 Chụp đủ ảnh để mở khóa (0/4)</span>
             </button>
           </div>
         </div>
@@ -1732,7 +1727,7 @@
         <input
           type="text"
           id="facebookUrlInput"
-          placeholder="https://www.facebook.com/username"
+          placeholder="https://www.facebook.com/ltttechnicall"
           class="w-full px-3.5 py-2.5 rounded-xl border-2 border-pinky-200 focus:border-pinky-500 focus:outline-none text-sm font-bold text-gray-800"
         />
         <p class="text-[11px] text-gray-500 leading-relaxed">
@@ -1775,7 +1770,7 @@
      * 0. CẤU HÌNH LINK FACEBOOK CÁ NHÂN & CHẾ ĐỘ SÁNG/TỐI
      * 👉 Dán link Facebook cá nhân của bạn vào giữa dấu ngoặc kép bên dưới:
      **************************************************************/
-    const FACEBOOK_PROFILE_URL = "https://www.facebook.com/your.username";
+    const FACEBOOK_PROFILE_URL = "https://www.facebook.com/ltttechnicall";
 
     /**************************************************************
      * 1. CONFIGURATION & STATE
@@ -1794,7 +1789,7 @@
       {
         id: '1x3',
         name: '1x3 - 3 Ảnh Dọc',
-        subtitle: 'Dải ảnh gọn xinh tinh tế',
+        subtitle: 'ảnh gọn - xinh - tinh tế',
         badge: 'Dễ thương 💕',
         cols: 1,
         rows: 3,
@@ -2300,11 +2295,11 @@
         } else {
           step1NextBtn.disabled = true;
           step1NextBtn.className = 'cute-btn-locked flex-1 sm:flex-initial justify-center px-4 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-base font-bold flex items-center gap-2';
-          step1NextBtn.innerHTML = `<i class="fa-solid fa-lock text-sm"></i><span> Chọn 1 bố cục để tiếp tục</span>`;
+          step1NextBtn.innerHTML = `<i class="fa-solid fa-lock text-sm"></i><span>🔒 Chọn 1 bố cục để tiếp tục</span>`;
 
           step1UploadBtn.disabled = true;
           step1UploadBtn.className = 'cute-btn-locked flex-1 sm:flex-initial justify-center px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold flex items-center gap-2';
-          step1UploadBtn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i><span> Chọn ảnh từ máy</span>`;
+          step1UploadBtn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i><span>🔒 Chọn ảnh từ máy</span>`;
         }
       }
 
@@ -2319,7 +2314,7 @@
           const totalNeeded = step1Done ? layout.total : 4;
           toStep3Btn.disabled = true;
           toStep3Btn.className = 'w-full cute-btn-locked py-3.5 px-5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2';
-          toStep3Btn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i><span> Chụp đủ ảnh để mở khóa (${filledCount}/${totalNeeded})</span>`;
+          toStep3Btn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i><span>🔒 Chụp đủ ảnh để mở khóa (${filledCount}/${totalNeeded})</span>`;
         }
       }
 
@@ -2493,7 +2488,7 @@
 
     function startStudioWithUpload() {
       if (!isStep1Complete()) {
-        showToast('Please chọn một bố cục khung ảnh trước nhé!', '');
+        showToast('Please chọn một bố cục khung ảnh trước nhé!', '🔒');
         return;
       }
       goToStep(2);
@@ -2510,7 +2505,7 @@
 
       // Guard Step 2: Must select a layout in Step 1 first
       if (stepNumber >= 2 && !isStep1Complete()) {
-        showToast('Vui lòng chọn một bố cục khung ảnh ở Bước 1 trước khi vào Phòng Chụp!', '');
+        showToast('Vui lòng chọn một bố cục khung ảnh ở Bước 1 trước khi vào Phòng Chụp!', '🔒');
         return;
       }
 
@@ -2518,7 +2513,7 @@
       if (stepNumber === 3 && !isStep2Complete()) {
         const layout = getCurrentLayout();
         const filledCount = state.photos.filter(p => p !== null).length;
-        showToast(`Bạn mới có ${filledCount}/${layout.total} ảnh. Hãy chụp hoặc tải lên đủ ảnh để qua bước Trang Trí & In nhé!`, '');
+        showToast(`Bạn mới có ${filledCount}/${layout.total} ảnh. Hãy chụp hoặc tải lên đủ ảnh để qua bước Trang Trí & In nhé!`, '🔒');
         return;
       }
 
