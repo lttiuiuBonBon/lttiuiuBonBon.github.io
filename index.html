@@ -1,0 +1,3769 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photobooth Hàn Quốc ✨ Chụp Ảnh Lấy Liền</title>
+  <!-- Favicon from original repository -->
+  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Panbap/anh/refs/heads/main/icon1.png" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Quicksand, Nunito Sans, Fredoka, Pacifico (Hỗ trợ đầy đủ tiếng Việt) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:wght@500;600;700;800&family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pinky: {
+              50: '#fff0f6',
+              100: '#ffd6e7',
+              200: '#ffadd2',
+              300: '#ff85c0',
+              400: '#f759ab',
+              500: '#eb2f96',
+              600: '#c41d7f',
+              700: '#9e1068',
+            },
+            cream: '#fff9fb'
+          },
+          fontFamily: {
+            sans: ['Quicksand', 'sans-serif'],
+            display: ['"Nunito Sans"', 'Fredoka', 'sans-serif'],
+            script: ['Pacifico', 'cursive'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ==========================================================================
+       GIAO DIỆN CHẾ ĐỘ SÁNG (MẶC ĐỊNH) & CHẾ ĐỘ TỐI (body.dark-mode - BẢN 2)
+       TỐI ƯU CHUYỂN ĐỔI SÁNG / TỐI SIÊU MƯỢT 60FPS ĐỒNG BỘ
+       ========================================================================== */
+    :root {
+      --theme-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --theme-duration: 0.42s;
+      --subpanel-bg: #fff0f6;
+      --btn-border: #ffadd2;
+      --slider-thumb: #eb2f96;
+    }
+
+    body.dark-mode {
+      --subpanel-bg: #261025;
+      --btn-border: #4d254b;
+      --slider-thumb: #ec4899;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fff5f8;
+      background-image: radial-gradient(#f472b6 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      color: #4a1d35;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition:
+        background-color var(--theme-duration) var(--theme-ease),
+        color var(--theme-duration) var(--theme-ease);
+    }
+
+    /* Đồng bộ chuyển màu mượt mà cho tất cả thẻ, viền, chữ, ô nhập liệu ở Bước 3 */
+    header,
+    .cute-card,
+    .theme-subpanel,
+    .strip-preview-stage,
+    .mobile-bottom-nav,
+    .mobile-tab-bar,
+    .bg-pinky-50,
+    .bg-pinky-50\/90,
+    .bg-pinky-50\/80,
+    .bg-pinky-50\/70,
+    .bg-pinky-100,
+    .bg-pinky-200\/80,
+    .border-pinky-100,
+    .border-pinky-200,
+    .border-pinky-300,
+    .text-pinky-700,
+    .text-pinky-600,
+    .text-gray-800,
+    .text-gray-700,
+    .text-gray-600,
+    .text-gray-500,
+    .text-gray-400,
+    .photo-slot-empty,
+    .photo-slot-badge,
+    .cute-btn-locked,
+    .step-tab-locked,
+    input[type="text"] {
+      transition:
+        background-color var(--theme-duration) var(--theme-ease),
+        border-color var(--theme-duration) var(--theme-ease),
+        color var(--theme-duration) var(--theme-ease),
+        box-shadow var(--theme-duration) var(--theme-ease);
+    }
+
+    /* ==========================================================================
+       GIAO DIỆN ĐIỆN THOẠI TỰ ĐỘNG (AUTOMATIC MOBILE UI < 768PX & THIẾT BỊ DI ĐỘNG)
+       ========================================================================== */
+    .mobile-bottom-nav {
+      display: none;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 2px solid #fbcfe8;
+      box-shadow: 0 -8px 25px rgba(235, 47, 150, 0.14);
+    }
+
+    body.dark-mode .mobile-bottom-nav {
+      background: rgba(26, 11, 26, 0.96);
+      border-top-color: #4d224a;
+      box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.65);
+    }
+
+    .mobile-tab-bar {
+      display: none;
+      background: #fff0f6;
+      border: 1.5px solid #fbcfe8;
+    }
+
+    body.dark-mode .mobile-tab-bar {
+      background: #261025;
+      border-color: #4d254b;
+    }
+
+    /* Tự động kích hoạt khi màn hình < 768px hoặc khi JS phát hiện thiết bị Điện thoại (body.is-mobile-device) */
+    @media (max-width: 767px) {
+      body {
+        padding-bottom: 84px;
+      }
+      .desktop-step-nav {
+        display: none !important;
+      }
+      .mobile-bottom-nav {
+        display: flex !important;
+      }
+      .mobile-tab-bar {
+        display: grid !important;
+      }
+      .cute-card {
+        border-radius: 20px;
+      }
+      .mobile-step1-sticky-cta {
+        position: sticky;
+        bottom: 76px;
+        z-index: 25;
+      }
+      .mobile-step3-panel-hidden {
+        display: none !important;
+      }
+      .mobile-compact-preview canvas {
+        max-height: 250px !important;
+        width: auto !important;
+      }
+      .mobile-expanded-preview canvas {
+        max-height: 440px !important;
+        width: auto !important;
+      }
+      .slot-touch-actions {
+        opacity: 1 !important;
+        background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%) !important;
+        justify-content: flex-end !important;
+        padding: 6px !important;
+      }
+    }
+
+    body.is-mobile-device {
+      padding-bottom: 84px;
+    }
+    body.is-mobile-device .desktop-step-nav {
+      display: none !important;
+    }
+    body.is-mobile-device .mobile-bottom-nav {
+      display: flex !important;
+    }
+    body.is-mobile-device .mobile-tab-bar {
+      display: grid !important;
+    }
+    body.is-mobile-device .mobile-step1-sticky-cta {
+      position: sticky;
+      bottom: 76px;
+      z-index: 25;
+    }
+    body.is-mobile-device .mobile-step3-panel-hidden {
+      display: none !important;
+    }
+    body.is-mobile-device .mobile-compact-preview canvas {
+      max-height: 250px !important;
+      width: auto !important;
+    }
+    body.is-mobile-device .mobile-expanded-preview canvas {
+      max-height: 440px !important;
+      width: auto !important;
+    }
+    body.is-mobile-device .slot-touch-actions {
+      opacity: 1 !important;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%) !important;
+      justify-content: flex-end !important;
+      padding: 6px !important;
+    }
+
+    /* Khung nền Bản Xem Trước Trực Tiếp ở Bước 3 chuyển cảnh 2 lớp mượt mà */
+    .strip-preview-stage {
+      position: relative;
+      background-color: #fdf2f8;
+      background-image: linear-gradient(180deg, rgba(255, 240, 246, 0.78) 0%, rgba(243, 232, 255, 0.78) 100%);
+      border: 1.5px solid #fbcfe8;
+      z-index: 1;
+    }
+
+    .strip-preview-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, #1d0c1c 0%, #291127 100%);
+      opacity: 0;
+      transition: opacity var(--theme-duration) var(--theme-ease);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body.dark-mode .strip-preview-stage {
+      background-color: #1d0c1c;
+      border-color: #4d254b !important;
+    }
+
+    body.dark-mode .strip-preview-stage::before {
+      opacity: 1;
+    }
+
+    /* Hiệu ứng xoay nhẹ icon mặt trăng / mặt trời khi bấm chuyển chế độ */
+    #themeIcon {
+      display: inline-block;
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease;
+    }
+    .theme-icon-spin {
+      transform: rotate(360deg) scale(1.15);
+    }
+
+    /* Floating cute background decorations */
+    .floating-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .float-item {
+      position: absolute;
+      animation: floatUp linear infinite;
+      opacity: 0.45;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(105vh) rotate(0deg) scale(0.85);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.55;
+      }
+      85% {
+        opacity: 0.55;
+      }
+      100% {
+        transform: translateY(-15vh) rotate(360deg) scale(1.15);
+        opacity: 0;
+      }
+    }
+
+    /* Glass & Cute Pastel Cards (Light Mode) */
+    .cute-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 2px solid #fbcfe8;
+      border-radius: 26px;
+      box-shadow: 0 14px 35px -6px rgba(235, 47, 150, 0.14), 0 4px 12px -2px rgba(255, 133, 192, 0.12);
+      transform: translateZ(0);
+    }
+
+    .theme-subpanel {
+      background-color: #fff0f6;
+      border: 1.5px solid #fbcfe8;
+    }
+
+    /* Cute 3D Bubble Buttons (Light Mode) */
+    .cute-btn-primary {
+      background: linear-gradient(135deg, #ff66a3 0%, #ff85c0 50%, #f759ab 100%);
+      color: #ffffff;
+      border-radius: 9999px;
+      box-shadow: 0 8px 20px -4px rgba(235, 47, 150, 0.45), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .cute-btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 12px 24px -4px rgba(235, 47, 150, 0.58), inset 0 2px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    .cute-btn-primary:active:not(:disabled) {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .cute-btn-secondary,
+    .theme-pill-btn,
+    .timer-btn {
+      background-color: #fff0f6;
+      color: #c41d7f;
+      border: 2px solid #ffadd2;
+      transition:
+        background-color var(--theme-duration) var(--theme-ease),
+        border-color var(--theme-duration) var(--theme-ease),
+        color var(--theme-duration) var(--theme-ease),
+        box-shadow var(--theme-duration) var(--theme-ease),
+        transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .cute-btn-secondary,
+    .timer-btn {
+      border-radius: 9999px;
+    }
+
+    .theme-pill-btn {
+      border-radius: 9999px;
+    }
+
+    .cute-btn-secondary:hover:not(:disabled),
+    .theme-pill-btn:hover:not(:disabled),
+    .timer-btn:hover:not(:disabled) {
+      background-color: #ffd6e7;
+      border-color: #ff85c0;
+      transform: translateY(-1px);
+    }
+
+    /* Active / Selected Pill Button */
+    .theme-pill-btn.active-pill,
+    .cute-btn-secondary.active-pill,
+    .timer-btn.active-timer {
+      background: linear-gradient(135deg, #ff4d94 0%, #f4258c 100%) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+      box-shadow: 0 6px 18px -3px rgba(244, 37, 140, 0.5);
+    }
+
+    /* Locked / Disabled Buttons */
+    .cute-btn-locked {
+      background-color: #f3e8ee !important;
+      color: #a68b97 !important;
+      border: 2px dashed #e5d4dc !important;
+      border-radius: 9999px;
+      box-shadow: none !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+    }
+
+    .step-tab-locked {
+      background-color: #f3e8ee !important;
+      color: #a68b97 !important;
+      border: 1px dashed #e5d4dc !important;
+      cursor: not-allowed !important;
+    }
+
+    /* Layout Card Selection Active State */
+    .layout-card {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .layout-card:hover {
+      transform: translateY(-5px);
+    }
+    .layout-card.selected {
+      border-color: #eb2f96;
+      background: linear-gradient(180deg, #fff0f6 0%, #ffffff 100%);
+      box-shadow: 0 16px 32px -8px rgba(235, 47, 150, 0.28), 0 0 0 3px rgba(235, 47, 150, 0.2);
+    }
+
+    /* Empty Photo Slots (Step 2) */
+    .photo-slot-empty {
+      background-color: #fff5f9;
+      border: 2px dashed #f9a8d4;
+      color: #c41d7f;
+      transition: all 0.2s ease;
+    }
+    .photo-slot-empty:hover {
+      background-color: #fce7f3;
+      border-color: #ec4899;
+    }
+    .photo-slot-empty.retake-active {
+      border-style: solid;
+      border-color: #ec4899;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25);
+    }
+    .photo-slot-badge {
+      background-color: #fce7f3;
+      color: #db2777;
+    }
+
+    /* Range Sliders */
+    input[type="range"] {
+      accent-color: #f4258c;
+    }
+
+    /* ==========================================================================
+       DARK MODE OVERRIDES (body.dark-mode - CHUẨN BẢN THỨ 2)
+       ========================================================================== */
+    body.dark-mode {
+      background-color: #160916;
+      background-image: radial-gradient(rgba(236, 72, 153, 0.16) 1.2px, transparent 1.2px);
+      color: #fce7f3;
+    }
+
+    body.dark-mode header {
+      background-color: rgba(26, 11, 26, 0.9) !important;
+      border-bottom-color: #4d224a !important;
+    }
+
+    body.dark-mode .cute-card {
+      background: rgba(35, 14, 34, 0.95);
+      border-color: #4d224a;
+      box-shadow: 0 16px 38px -8px rgba(0, 0, 0, 0.65), 0 4px 14px rgba(236, 72, 153, 0.12);
+      color: #fce7f3;
+    }
+
+    body.dark-mode .layout-card.selected {
+      border-color: #ec4899;
+      background: linear-gradient(180deg, #351533 0%, #230e22 100%);
+      box-shadow: 0 16px 32px -8px rgba(236, 72, 153, 0.4), 0 0 0 3px rgba(236, 72, 153, 0.28);
+    }
+
+    body.dark-mode .theme-subpanel,
+    body.dark-mode .bg-pinky-50,
+    body.dark-mode .bg-pinky-50\/90,
+    body.dark-mode .bg-pinky-50\/80,
+    body.dark-mode .bg-pinky-50\/70 {
+      background-color: #261025 !important;
+      border-color: #4d254b !important;
+    }
+
+    body.dark-mode .bg-pinky-100,
+    body.dark-mode .bg-pinky-200\/80 {
+      background-color: #381836 !important;
+      color: #fbcfe8 !important;
+      border-color: #582854 !important;
+    }
+
+    body.dark-mode .border-pinky-100,
+    body.dark-mode .border-pinky-200,
+    body.dark-mode .border-pinky-300 {
+      border-color: #4d254b !important;
+    }
+
+    body.dark-mode .text-pinky-700,
+    body.dark-mode .text-gray-800,
+    body.dark-mode .text-gray-700 {
+      color: #ff9ec6 !important;
+    }
+
+    body.dark-mode .text-gray-600,
+    body.dark-mode .text-gray-500,
+    body.dark-mode .text-gray-400,
+    body.dark-mode .text-pinky-600 {
+      color: #c4a3bf !important;
+    }
+
+    body.dark-mode .cute-btn-secondary,
+    body.dark-mode .theme-pill-btn,
+    body.dark-mode .timer-btn {
+      background-color: #2b122a;
+      color: #fce7f3;
+      /* Giữ nguyên độ dày border 2px giống Light Mode để tránh nhảy kích thước (layout reflow) */
+      border: 2px solid #4d254b;
+    }
+
+    body.dark-mode .cute-btn-secondary:hover:not(:disabled),
+    body.dark-mode .theme-pill-btn:hover:not(:disabled),
+    body.dark-mode .timer-btn:hover:not(:disabled) {
+      background-color: #3b1939;
+      border-color: #ec4899;
+    }
+
+    body.dark-mode .cute-btn-locked,
+    body.dark-mode .step-tab-locked {
+      background-color: #1f0d1e !important;
+      color: #7d5278 !important;
+      border-color: #3d1b3b !important;
+    }
+
+    /* Empty Photo Slots in Dark Mode (Matches Screenshot 1) */
+    body.dark-mode .photo-slot-empty {
+      background-color: #2a1229;
+      border: 2px dashed #4d254b;
+      color: #ff85c0;
+    }
+    body.dark-mode .photo-slot-empty:hover {
+      background-color: #351734;
+      border-color: #ec4899;
+    }
+    body.dark-mode .photo-slot-badge {
+      background-color: #3d1b3c;
+      color: #fce7f3;
+    }
+
+    body.dark-mode input[type="text"] {
+      background-color: #1c0b1b !important;
+      border-color: #4d254b !important;
+      color: #fce7f3 !important;
+    }
+
+    /* Camera flash animation */
+    @keyframes flashAnim {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .flash-active {
+      animation: flashAnim 0.45s ease-out forwards;
+    }
+
+    /* Countdown number pop */
+    @keyframes countPop {
+      0% { transform: scale(0.4); opacity: 0; }
+      50% { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .count-pop {
+      animation: countPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--subpanel-bg);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--btn-border);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--slider-thumb);
+    }
+
+    /* Sticker overlay element */
+    .sticker-item {
+      position: absolute;
+      user-select: none;
+      touch-action: none;
+      cursor: grab;
+      transform-origin: center center;
+      transition: box-shadow 0.15s ease;
+    }
+    .sticker-item:active {
+      cursor: grabbing;
+    }
+    .sticker-item.selected {
+      outline: 2px dashed var(--slider-thumb);
+      outline-offset: 4px;
+      background: rgba(255, 240, 246, 0.25);
+      border-radius: 10px;
+    }
+
+    /* Printing Slot Animation */
+    @keyframes printSlideDown {
+      0% {
+        transform: translateY(-105%);
+      }
+      100% {
+        transform: translateY(0%);
+      }
+    }
+    .printing-strip-anim {
+      animation: printSlideDown 2.6s cubic-bezier(0.22, 0.8, 0.36, 1) forwards;
+    }
+
+    /* Facebook Button Gradient Style */
+    .fb-btn {
+      background: linear-gradient(135deg, #1877F2 0%, #0d5bd9 100%);
+      color: #ffffff;
+      border-radius: 9999px;
+      box-shadow: 0 6px 16px -3px rgba(24, 119, 242, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .fb-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 10px 20px -3px rgba(24, 119, 242, 0.6);
+    }
+  </style>
+</head>
+<body class="relative selection:bg-pinky-200 selection:text-pinky-700">
+
+  <!-- Audio Assets from Original Photobooth -->
+  <audio id="beepSound" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+  <audio id="shutterSound" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/584/584-preview.mp3"></audio>
+
+  <!-- Floating Background Particles -->
+  <div id="floatingBg" class="floating-bg"></div>
+
+  <!-- Top Header / Navbar (2-Row Layout Matching Reference Image) -->
+  <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-pinky-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 space-y-2.5">
+      <!-- Hàng 1: Logo bên trái & Thanh chuyển bước bên phải -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Brand Logo -->
+        <a href="#" onclick="goToStep(1); return false;" class="flex items-center gap-3 group min-w-0">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-pinky-100 to-pinky-200 p-1.5 shadow-sm border border-pinky-300 flex items-center justify-center group-hover:scale-105 transition flex-shrink-0">
+            <img
+              src="https://raw.githubusercontent.com/Panbap/anh/refs/heads/main/icon1.png"
+              alt="Photobooth Icon"
+              class="w-full h-full object-contain"
+              onerror="this.onerror=null; this.src='https://placehold.co/80x80/ffd6e7/eb2f96?text=📸';"
+            />
+          </div>
+          <div class="truncate">
+            <div class="flex items-center gap-2">
+              <span class="font-display text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-pinky-400 via-pinky-500 to-purple-400 bg-clip-text text-transparent truncate">
+                LTT Photobooth
+              </span>
+              <span class="inline-block text-[11px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full bg-pinky-100 text-pinky-600 border border-pinky-200">
+                Life4Cuts ✨
+              </span>
+            </div>
+            <p class="text-xs text-pinky-600/80 font-medium truncate">
+              Tiệm chụp ảnh Hàn Quốc lấy liền siêu xinh
+            </p>
+          </div>
+        </a>
+
+        <!-- Step Navigation Pills (Desktop - Right Aligned) -->
+        <nav class="desktop-step-nav hidden md:flex items-center bg-pinky-50/90 p-1.5 rounded-full border border-pinky-200 shadow-inner">
+          <button
+            id="stepTab1"
+            onclick="goToStep(1)"
+            class="step-tab cute-btn-primary flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all"
+          >
+            <span>1. Chọn Bố Cục</span>
+          </button>
+          <i class="fa-solid fa-chevron-right text-[10px] text-pinky-400 mx-1.5"></i>
+          <button
+            id="stepTab2"
+            onclick="goToStep(2)"
+            class="step-tab step-tab-locked flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all"
+          >
+            <i id="stepTab2LockIcon" class="fa-solid fa-lock text-xs"></i>
+            <span>2. Phòng Chụp</span>
+          </button>
+          <i class="fa-solid fa-chevron-right text-[10px] text-pinky-400 mx-1.5"></i>
+          <button
+            id="stepTab3"
+            onclick="goToStep(3)"
+            class="step-tab step-tab-locked flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all"
+          >
+            <i id="stepTab3LockIcon" class="fa-solid fa-lock text-xs"></i>
+            <span>3. Trang Trí & In</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Hàng 2: 4 Nút Tiện Ích Căn Trái Ngay Dưới Logo -->
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap justify-start">
+        <!-- 1. Nút Chuyển Đổi Chế Độ Sáng / Tối -->
+        <button
+          id="themeToggleBtn"
+          onclick="toggleDarkMode()"
+          class="cute-btn-secondary px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold flex items-center gap-2"
+          title="Chuyển đổi chế độ Sáng / Tối"
+        >
+          <i id="themeIcon" class="fa-solid fa-sun text-amber-400"></i>
+          <span id="themeLabel">Chế độ Sáng</span>
+        </button>
+
+        <!-- 2. Cụm Nút Facebook Cá Nhân + Nút Sửa Nhanh Link -->
+        <div class="inline-flex items-center">
+          <a
+            id="facebookProfileLink"
+            href="https://www.facebook.com/your.username"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="fb-btn px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold flex items-center gap-2 rounded-l-full"
+            title="Ghé thăm Facebook cá nhân của tôi"
+          >
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+            </svg>
+            <span>Facebook</span>
+          </a>
+          <button
+            onclick="openFacebookModal()"
+            class="bg-[#1558d6] hover:bg-blue-800 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-r-full ml-0.5 transition shadow-sm"
+            title="Dán hoặc đổi link Facebook cá nhân của bạn"
+          >
+            <i class="fa-solid fa-pen-to-square text-xs"></i>
+          </button>
+        </div>
+
+        <!-- 3. Nút Âm Thanh -->
+        <button
+          id="soundToggleBtn"
+          onclick="toggleSound()"
+          class="cute-btn-secondary px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold flex items-center gap-2"
+          title="Bật / Tắt âm thanh chụp ảnh"
+        >
+          <i id="soundIcon" class="fa-solid fa-volume-high text-pinky-500"></i>
+          <span id="soundLabel">Âm thanh</span>
+        </button>
+
+        <!-- 4. Nút Hướng Dẫn -->
+        <button
+          onclick="toggleGuideModal(true)"
+          class="cute-btn-secondary px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold flex items-center gap-2"
+          title="Hướng dẫn sử dụng"
+        >
+          <i class="fa-solid fa-circle-question text-pinky-500"></i>
+          <span>Hướng dẫn</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace Container -->
+  <main class="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+
+    <!-- ==========================================
+         STEP 1: CHỌN BỐ CỤC (LAYOUT SELECTION)
+         ========================================== -->
+    <section id="step1Section" class="space-y-5 sm:space-y-8">
+      <!-- Hero Banner -->
+      <div class="cute-card p-4 sm:p-8 text-center relative overflow-hidden">
+        <div class="absolute -top-10 -left-10 w-36 h-36 bg-pinky-200/40 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute -bottom-10 -right-10 w-44 h-44 bg-purple-200/40 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-pinky-100 text-pinky-600 text-[11px] sm:text-sm font-bold mb-2 sm:mb-3 border border-pinky-200 shadow-sm">
+          <span>🎀</span> Studio Chụp Ảnh Hàn Quốc Online Miễn Phí <span>✨</span>
+        </div>
+        <h1 class="font-display text-xl sm:text-4xl font-extrabold text-pinky-700 mb-1.5 sm:mb-2">
+          Chọn Khung Bố Cục Yêu Thích Của Bạn
+        </h1>
+        <p class="text-xs sm:text-base text-gray-600 max-w-2xl mx-auto">
+          Chọn kiểu khung ảnh strip chuẩn Hàn Quốc bên dưới, sau đó tạo dáng trước camera hoặc tải ảnh từ máy lên để trang trí sticker & in ảnh lấy liền nhé!
+        </p>
+      </div>
+
+      <!-- Layout Grid (6 Korean Photobooth Layouts - 2 cols on mobile, 3 cols on desktop) -->
+      <div id="layoutGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+        <!-- Populated dynamically via JS for crisp wireframe visual cards -->
+      </div>
+
+      <!-- Bottom CTA Bar (Sticky on Mobile) -->
+      <div class="mobile-step1-sticky-cta cute-card p-3.5 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+        <div class="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-pinky-100 text-pinky-600 flex items-center justify-center text-xl sm:text-2xl shadow-inner flex-shrink-0">
+            📸
+          </div>
+          <div class="min-w-0">
+            <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-pinky-500">Bố cục đang chọn</p>
+            <h3 id="selectedLayoutSummary" class="font-display text-xs sm:text-lg font-bold text-gray-800 truncate">
+              Chưa chọn bố cục — Hãy bấm chọn 1 khung phía trên nhé!
+            </h3>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center">
+          <button
+            id="step1UploadBtn"
+            onclick="startStudioWithUpload()"
+            disabled
+            class="cute-btn-locked flex-1 sm:flex-initial justify-center px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-lock text-xs"></i>
+            <span>Chọn ảnh từ máy</span>
+          </button>
+          <button
+            id="step1NextBtn"
+            onclick="goToStep(2)"
+            disabled
+            class="cute-btn-locked flex-1 sm:flex-initial justify-center px-4 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-base font-bold flex items-center gap-1.5"
+          >
+            <i class="fa-solid fa-lock text-sm"></i>
+            <span id="step1NextBtnLabel">🔒 Chọn 1 bố cục để tiếp tục</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         STEP 2: PHÒNG CHỤP (CAMERA & UPLOAD STUDIO)
+         ========================================== -->
+    <section id="step2Section" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Left / Center Column: Live Camera Viewfinder & Controls (8 cols) -->
+        <div class="lg:col-span-8 cute-card p-3.5 sm:p-6 space-y-4 sm:space-y-5">
+          <!-- Studio Top Bar -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 sm:pb-3 border-b border-pinky-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500 animate-pulse"></span>
+              <h2 class="font-display text-base sm:text-xl font-bold text-pinky-700">
+                Phòng Chụp Studio
+              </h2>
+              <span id="studioLayoutBadge" class="text-[11px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-pinky-100 text-pinky-600 border border-pinky-200">
+                Chưa chọn khung
+              </span>
+            </div>
+
+            <!-- Camera Source, Switch Facing & Upload Controls -->
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <button
+                id="retryCamBtn"
+                onclick="initCamera()"
+                class="cute-btn-secondary px-2.5 sm:px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5"
+                title="Kết nối lại Webcam"
+              >
+                <i class="fa-solid fa-video"></i>
+                <span>Bật Cam</span>
+              </button>
+              <button
+                id="switchCamFacingBtn"
+                onclick="switchCameraFacingMode()"
+                class="md:hidden cute-btn-secondary px-2.5 sm:px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5"
+                title="Đổi Camera Trước / Sau (Dành cho Điện thoại)"
+              >
+                <i class="fa-solid fa-camera-rotate text-pinky-500"></i>
+                <span>Đổi Cam</span>
+              </button>
+              <button
+                onclick="triggerMultiUpload()"
+                class="cute-btn-secondary px-2.5 sm:px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Tải ảnh lên</span>
+              </button>
+              <input
+                type="file"
+                id="multiUploadInput"
+                accept="image/*"
+                multiple
+                class="hidden"
+                onchange="handleMultiFileUpload(event)"
+              />
+              <input
+                type="file"
+                id="singleSlotUploadInput"
+                accept="image/*"
+                class="hidden"
+                onchange="handleSingleSlotFileUpload(event)"
+              />
+            </div>
+          </div>
+
+          <!-- Camera Viewfinder Container -->
+          <div class="relative w-full aspect-[4/3] bg-gray-900 rounded-3xl overflow-hidden shadow-inner border-4 border-pinky-200 flex items-center justify-center">
+            <!-- Real Webcam Video -->
+            <video
+              id="webcamVideo"
+              autoplay
+              playsinline
+              muted
+              class="w-full h-full object-cover transition-transform duration-300"
+            ></video>
+
+            <!-- Camera Placeholder Overlay (Shown when Webcam is off or blocked) -->
+            <div
+              id="cameraPlaceholderOverlay"
+              class="hidden absolute inset-0 z-10 bg-gradient-to-br from-[#231230] via-[#1a0f26] to-[#121528] flex flex-col items-center justify-center p-6 text-center"
+            >
+              <div class="w-16 h-16 rounded-3xl bg-pinky-500/20 border-2 border-pinky-400/40 text-pinky-300 flex items-center justify-center text-3xl mb-3 shadow-lg">
+                <i class="fa-solid fa-camera-retro"></i>
+              </div>
+              <h4 class="font-display text-lg sm:text-xl font-bold text-pink-100 mb-1">
+                Chưa kết nối Camera hoặc thiết bị không có Webcam
+              </h4>
+              <p class="text-xs sm:text-sm text-pink-200/75 max-w-md mb-5">
+                Hãy cấp quyền truy cập Webcam để chụp trực tiếp, hoặc bấm nút tải ảnh có sẵn từ thiết bị của bạn vào các ô ảnh trống bên phải nhé!
+              </p>
+              <div class="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  onclick="initCamera()"
+                  class="cute-btn-primary px-5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2"
+                >
+                  <i class="fa-solid fa-video"></i>
+                  <span>Thử Bật Lại Camera</span>
+                </button>
+                <button
+                  onclick="triggerMultiUpload()"
+                  class="cute-btn-secondary px-5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2"
+                >
+                  <i class="fa-solid fa-folder-open"></i>
+                  <span>Tải Ảnh Từ Máy Lên</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Pose Silhouette Helper Overlay -->
+            <div
+              id="poseGuideOverlay"
+              class="hidden absolute inset-0 pointer-events-none flex flex-col items-center justify-end pb-4 opacity-65"
+            >
+              <div id="poseGuideSvgContainer" class="w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center"></div>
+              <span id="poseGuideText" class="px-3 py-1 rounded-full bg-black/50 text-white text-xs font-bold backdrop-blur-sm">
+                Gợi ý dáng: Tạo dáng chữ V đáng yêu ✌️
+              </span>
+            </div>
+
+            <!-- Top Overlay Badges inside Viewfinder -->
+            <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
+              <div class="flex items-center gap-2">
+                <span id="activeFilterBadge" class="px-3 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-xs font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-sparkles text-pinky-300"></i>
+                  <span>Màu: Gốc</span>
+                </span>
+                <span id="retakeTargetBadge" class="hidden px-3 py-1 rounded-full bg-pinky-500 text-white text-xs font-bold shadow">
+                  Đang chụp lại Ảnh #1
+                </span>
+              </div>
+              <div class="px-3 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-xs font-bold">
+                <span id="shotProgressText">Đã chụp: 0 / 4</span>
+              </div>
+            </div>
+
+            <!-- Countdown Number Overlay -->
+            <div
+              id="countdownOverlay"
+              class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/25 backdrop-blur-[2px]"
+            >
+              <div
+                id="countdownNumber"
+                class="font-display text-7xl sm:text-9xl font-bold text-white drop-shadow-[0_6px_25px_rgba(235,47,150,0.85)]"
+              >
+                3
+              </div>
+              <p id="countdownSubtext" class="mt-2 text-white font-bold text-sm sm:text-base bg-pinky-500/80 px-4 py-1 rounded-full">
+                Cười tươi lên nào! ✨
+              </p>
+            </div>
+
+            <!-- White Screen Flash Overlay -->
+            <div
+              id="flashOverlay"
+              class="hidden absolute inset-0 z-30 bg-white pointer-events-none"
+            ></div>
+          </div>
+
+          <!-- Primary Capture Action & Quick Controls -->
+          <div class="flex flex-col sm:flex-row sm:flex-wrap items-center justify-between gap-3 pt-1">
+            <!-- Center Big Shutter Button (Placed first on mobile for easy thumb reach) -->
+            <div class="w-full sm:w-auto order-1 sm:order-2 flex items-center justify-center">
+              <button
+                id="captureBtn"
+                onclick="handleCaptureClick()"
+                class="w-full sm:w-auto justify-center cute-btn-primary px-8 py-3.5 text-base sm:text-lg font-bold flex items-center gap-2.5 shadow-xl"
+              >
+                <i class="fa-solid fa-camera text-xl"></i>
+                <span id="captureBtnLabel">Chụp Tự Động (4 Tấm)</span>
+              </button>
+            </div>
+
+            <!-- Left Controls: Mirror & Pose Guide -->
+            <div class="w-full sm:w-auto order-2 sm:order-1 flex items-center justify-center gap-2 flex-wrap">
+              <button
+                id="mirrorToggleBtn"
+                onclick="toggleMirror()"
+                class="flex-1 sm:flex-initial justify-center cute-btn-secondary active-pill px-3 py-2 text-xs sm:text-sm font-bold flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-arrows-left-right"></i>
+                <span>Lật gương: Bật</span>
+              </button>
+
+              <button
+                id="poseToggleBtn"
+                onclick="togglePoseGuide()"
+                class="flex-1 sm:flex-initial justify-center cute-btn-secondary px-3 py-2 text-xs sm:text-sm font-bold flex items-center gap-1.5"
+              >
+                <i class="fa-solid fa-person-rays"></i>
+                <span>Gợi ý dáng</span>
+              </button>
+            </div>
+
+            <!-- Right Controls: Timer & Mode -->
+            <div class="w-full sm:w-auto order-3 flex items-center justify-center gap-2 flex-wrap">
+              <!-- Timer selector -->
+              <div class="flex items-center theme-subpanel rounded-full p-1 gap-1">
+                <span class="text-xs font-bold text-pinky-600 px-2">⏱️ Hẹn giờ:</span>
+                <button onclick="setCountdownSeconds(0)" data-sec="0" class="timer-btn px-2.5 py-1 text-xs font-bold">0s</button>
+                <button onclick="setCountdownSeconds(3)" data-sec="3" class="timer-btn active-timer px-2.5 py-1 text-xs font-bold">3s</button>
+                <button onclick="setCountdownSeconds(5)" data-sec="5" class="timer-btn px-2.5 py-1 text-xs font-bold">5s</button>
+                <button onclick="setCountdownSeconds(10)" data-sec="10" class="timer-btn px-2.5 py-1 text-xs font-bold">10s</button>
+              </div>
+
+              <!-- Auto vs Single Mode toggle -->
+              <button
+                id="autoModeBtn"
+                onclick="toggleAutoShootMode()"
+                class="cute-btn-secondary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5"
+                title="Chuyển đổi giữa chụp liên tiếp tự động và chụp từng tấm"
+              >
+                <i class="fa-solid fa-bolt text-pinky-500"></i>
+                <span id="autoModeLabel">Tự động liên tiếp</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Beauty / Brightness Slider & Live Color Filters -->
+          <div class="pt-3 border-t border-pinky-100 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-pinky-500"></i>
+                <span class="text-xs sm:text-sm font-bold text-gray-700">Bộ lọc màu Hàn Quốc trực tiếp:</span>
+              </div>
+
+              <!-- Brightness / Beauty Slider -->
+              <div class="flex items-center gap-2 bg-pinky-50 px-3 py-1.5 rounded-full border border-pinky-200">
+                <i class="fa-solid fa-sun text-amber-500 text-xs"></i>
+                <span class="text-xs font-bold text-pinky-700">Độ sáng / Mịn da:</span>
+                <input
+                  id="brightnessSlider"
+                  type="range"
+                  min="85"
+                  max="130"
+                  value="104"
+                  oninput="updateBrightness(this.value)"
+                  class="w-24 sm:w-28 cursor-pointer"
+                />
+                <span id="brightnessVal" class="text-xs font-bold text-pinky-600 w-9">104%</span>
+              </div>
+            </div>
+
+            <!-- 8 Filter Pills -->
+            <div id="filterBar" class="flex items-center gap-2 overflow-x-auto pb-2">
+              <!-- Populated dynamically via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Captured Slots Preview Strip (4 cols) -->
+        <div class="lg:col-span-4 cute-card p-4 sm:p-6 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="font-display text-lg font-bold text-pinky-700">
+                  Ảnh Đã Chụp ✨
+                </h3>
+                <p class="text-xs text-gray-500">
+                  Bấm vào bất kỳ ô ảnh nào để chụp lại hoặc thay ảnh lẻ
+                </p>
+              </div>
+              <button
+                onclick="clearAllPhotos()"
+                class="text-xs font-bold text-pinky-600 hover:text-pinky-800 underline"
+              >
+                Xoá hết
+              </button>
+            </div>
+
+            <!-- Captured Slots Grid -->
+            <div id="capturedSlotsContainer" class="grid grid-cols-2 gap-3 max-h-[460px] overflow-y-auto p-1">
+              <!-- Populated dynamically via JS -->
+            </div>
+          </div>
+
+          <!-- Proceed to Step 3 Button (Locked until all slots are filled) -->
+          <div class="pt-3 border-t border-pinky-100">
+            <button
+              id="toStep3Btn"
+              onclick="goToStep(3)"
+              disabled
+              class="w-full cute-btn-locked py-3.5 px-5 text-sm sm:text-base font-bold flex items-center justify-center gap-2"
+            >
+              <i id="toStep3BtnIcon" class="fa-solid fa-lock text-sm"></i>
+              <span id="toStep3BtnLabel">🔒 Chụp đủ ảnh để mở khóa (0/4)</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         STEP 3: TRANG TRÍ & IN ẢNH (CUSTOMIZE & EXPORT)
+         ========================================== -->
+    <section id="step3Section" class="hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+
+        <!-- Left Column: Live Photo Strip Interactive Canvas + Sticker Layer (5 cols) -->
+        <div class="lg:col-span-5 cute-card p-3.5 sm:p-6 flex flex-col items-center space-y-3.5 sm:space-y-4 lg:sticky lg:top-20">
+          <div class="w-full flex items-center justify-between gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-pinky-500 flex items-center gap-1.5">
+              <i class="fa-solid fa-wand-sparkles"></i> Bản Xem Trước Trực Tiếp
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="hidden sm:inline text-xs text-gray-500 font-medium">Kéo thả để di chuyển nhãn dán</span>
+              <button
+                id="mobilePreviewSizeBtn"
+                onclick="toggleMobilePreviewExpand()"
+                class="md:hidden cute-btn-secondary px-2.5 py-1 text-[11px] font-bold flex items-center gap-1"
+              >
+                <i class="fa-solid fa-magnifying-glass-plus text-pinky-500"></i>
+                <span id="mobilePreviewSizeLabel">Phóng to ảnh</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Strip Preview Stage -->
+          <div
+            id="stripPreviewStageBox"
+            class="strip-preview-stage mobile-compact-preview w-full flex justify-center p-3 sm:p-6 rounded-3xl shadow-inner overflow-hidden"
+          >
+            <div
+              id="stripStageWrapper"
+              class="relative inline-block shadow-2xl rounded-xl transition-all duration-300 select-none"
+              style="max-width: 100%;"
+            >
+              <!-- High-DPI Base Photo Strip Canvas -->
+              <canvas
+                id="photoStripCanvas"
+                class="block max-w-full h-auto rounded-lg"
+              ></canvas>
+
+              <!-- Interactive DOM Sticker Layer overlaid 1:1 on top of Canvas -->
+              <div
+                id="stickerOverlayLayer"
+                class="absolute inset-0 overflow-hidden pointer-events-auto"
+                onclick="handleStageBackgroundClick(event)"
+              ></div>
+            </div>
+          </div>
+
+          <!-- Floating Selected Sticker Toolbar -->
+          <div
+            id="activeStickerToolbar"
+            class="hidden w-full bg-pinky-50 border-2 border-pinky-300 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2 shadow-sm"
+          >
+            <span class="text-xs font-bold text-pinky-700 pl-2">Đang chọn nhãn dán:</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="transformSelectedSticker('scale', 0.15)" class="w-8 h-8 rounded-xl bg-white border border-pinky-200 hover:bg-pinky-100 text-pinky-700 font-bold text-sm" title="Phóng to">+</button>
+              <button onclick="transformSelectedSticker('scale', -0.15)" class="w-8 h-8 rounded-xl bg-white border border-pinky-200 hover:bg-pinky-100 text-pinky-700 font-bold text-sm" title="Thu nhỏ">-</button>
+              <button onclick="transformSelectedSticker('rotate', -15)" class="w-8 h-8 rounded-xl bg-white border border-pinky-200 hover:bg-pinky-100 text-pinky-700 text-xs" title="Xoay trái"><i class="fa-solid fa-rotate-left"></i></button>
+              <button onclick="transformSelectedSticker('rotate', 15)" class="w-8 h-8 rounded-xl bg-white border border-pinky-200 hover:bg-pinky-100 text-pinky-700 text-xs" title="Xoay phải"><i class="fa-solid fa-rotate-right"></i></button>
+              <button onclick="deleteSelectedSticker()" class="px-3 h-8 rounded-xl bg-red-500 hover:bg-red-600 text-white text-xs font-bold flex items-center gap-1" title="Xoá nhãn dán">
+                <i class="fa-solid fa-trash-can"></i> Xoá
+              </button>
+            </div>
+          </div>
+
+          <!-- Primary Export & Print Actions -->
+          <div class="w-full space-y-2.5 pt-1 sm:pt-2">
+            <!-- Tùy chỉnh tên file tải về -->
+            <div class="bg-pinky-50/80 p-2.5 rounded-2xl border border-pinky-200 flex items-center gap-2">
+              <i class="fa-solid fa-file-signature text-pinky-500 pl-1.5 text-sm"></i>
+              <span class="text-xs font-bold text-pinky-700 whitespace-nowrap">Tên file:</span>
+              <input
+                type="text"
+                id="customFileNameInput"
+                value="LTT-Photobooth"
+                maxlength="40"
+                placeholder="Nhập tên file tải về..."
+                class="w-full px-2.5 py-1 rounded-xl border border-pinky-200 focus:border-pinky-500 focus:outline-none text-xs font-bold text-gray-700 bg-white"
+              />
+              <span class="text-xs font-bold text-gray-400 pr-1">.png</span>
+            </div>
+
+            <button
+              onclick="triggerPhotoBoothPrint()"
+              class="w-full cute-btn-primary py-3.5 sm:py-4 px-6 text-sm sm:text-lg font-bold flex items-center justify-center gap-2.5 shadow-xl"
+            >
+              <i class="fa-solid fa-print text-lg sm:text-xl"></i>
+              <span>In Ảnh & Tải Về Máy (PNG)</span>
+            </button>
+
+            <!-- Nút Tạo & Quét Mã QR Tải Ảnh -->
+            <button
+              onclick="openQrCodeModal()"
+              class="w-full cute-btn-secondary py-3 px-4 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border-2 border-pinky-300"
+            >
+              <i class="fa-solid fa-qrcode text-pinky-500 text-base"></i>
+              <span>Quét Mã QR Tải Ảnh (Mobile Scan)</span>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <button
+                onclick="openGifMomentModal()"
+                class="cute-btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5"
+              >
+                <i class="fa-solid fa-film text-pinky-500"></i>
+                <span>Khoảnh khắc GIF</span>
+              </button>
+              <button
+                onclick="goToStep(2)"
+                class="cute-btn-secondary py-2.5 px-4 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5"
+              >
+                <i class="fa-solid fa-camera-rotate text-pinky-500"></i>
+                <span>Chụp lại ảnh</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Customization Studio Panels (7 cols) -->
+        <div class="lg:col-span-7 space-y-4 sm:space-y-5">
+
+          <!-- Thanh Chuyển Tab Trang Trí Dành Riêng Cho Điện Thoại (Mobile 4-Tab Customizer) -->
+          <div id="mobileStep3Tabs" class="mobile-tab-bar grid-cols-4 gap-1.5 p-1.5 rounded-2xl shadow-sm">
+            <button
+              onclick="selectMobileCustomTab('color')"
+              data-mtab="color"
+              class="mobile-cust-tab theme-pill-btn active-pill py-2 px-1 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5"
+            >
+              <span class="text-sm">🎨</span>
+              <span>Màu Khung</span>
+            </button>
+            <button
+              onclick="selectMobileCustomTab('pattern')"
+              data-mtab="pattern"
+              class="mobile-cust-tab theme-pill-btn py-2 px-1 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5"
+            >
+              <span class="text-sm">🌸</span>
+              <span>Viền & Góc</span>
+            </button>
+            <button
+              onclick="selectMobileCustomTab('sticker')"
+              data-mtab="sticker"
+              class="mobile-cust-tab theme-pill-btn py-2 px-1 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5"
+            >
+              <span class="text-sm">🎀</span>
+              <span>Sticker</span>
+            </button>
+            <button
+              onclick="selectMobileCustomTab('caption')"
+              data-mtab="caption"
+              class="mobile-cust-tab theme-pill-btn py-2 px-1 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center gap-0.5"
+            >
+              <span class="text-sm">💌</span>
+              <span>Chữ Ký</span>
+            </button>
+          </div>
+
+          <!-- 1. Frame Color & Gradient Picker -->
+          <div id="customPanel_color" class="cute-card p-4 sm:p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-display text-base sm:text-lg font-bold text-pinky-700 flex items-center gap-2">
+                <span>🎨</span> 1. Màu Sắc Khung Ảnh (Frame Color)
+              </h3>
+              <label class="flex items-center gap-2 cursor-pointer bg-pinky-50 px-3 py-1 rounded-full border border-pinky-200 text-xs font-bold text-pinky-700">
+                <span>Tự chọn màu:</span>
+                <input
+                  type="color"
+                  id="customFrameColorPicker"
+                  value="#ffd6e7"
+                  oninput="setFrameSolidColor(this.value)"
+                  class="w-6 h-6 rounded-full border-0 cursor-pointer bg-transparent"
+                />
+              </label>
+            </div>
+
+            <!-- Solid Color Swatches -->
+            <div>
+              <p class="text-xs font-bold text-gray-500 mb-2">Màu đơn sắc Pastel & Cá tính:</p>
+              <div id="solidColorSwatches" class="flex flex-wrap items-center gap-2.5">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- Gradient Swatches -->
+            <div>
+              <p class="text-xs font-bold text-gray-500 mb-2">Màu chuyển sắc (Gradient Hàn Quốc):</p>
+              <div id="gradientColorSwatches" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Frame Patterns & Photo Borders -->
+          <div id="customPanel_pattern" class="mobile-step3-panel-hidden cute-card p-4 sm:p-6 space-y-4">
+            <h3 class="font-display text-base sm:text-lg font-bold text-pinky-700 flex items-center gap-2">
+              <span>🌸</span> 2. Hoạ Tiết Viền & Bo Góc Ảnh
+            </h3>
+
+            <!-- Pattern Buttons -->
+            <div id="patternButtonsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <!-- Populated via JS -->
+            </div>
+
+            <!-- Corner Radius & Inner Border Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-pinky-100">
+              <div class="bg-pinky-50/70 p-3 rounded-2xl border border-pinky-100 flex flex-col justify-center">
+                <div class="flex justify-between text-xs font-bold text-pinky-700 mb-1.5">
+                  <span>Độ bo tròn góc ảnh:</span>
+                  <span id="cornerRadiusLabel">16px</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="40"
+                  value="16"
+                  oninput="updatePhotoCornerRadius(this.value)"
+                  class="w-full cursor-pointer"
+                />
+              </div>
+
+              <div class="bg-pinky-50/70 p-3 rounded-2xl border border-pinky-100 flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-bold text-pinky-700">Viền trắng nổi bật quanh ảnh</p>
+                  <p class="text-[11px] text-gray-500">Tạo hiệu ứng khung viền đôi</p>
+                </div>
+                <input
+                  type="checkbox"
+                  id="innerBorderToggle"
+                  checked
+                  onchange="toggleInnerPhotoBorder(this.checked)"
+                  class="w-5 h-5 accent-pinky-500 rounded cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Cute Stickers & Badges -->
+          <div id="customPanel_sticker" class="mobile-step3-panel-hidden cute-card p-4 sm:p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-display text-base sm:text-lg font-bold text-pinky-700 flex items-center gap-2">
+                  <span>🎀</span> 3. Nhãn Dán Trang Trí (Stickers)
+                </h3>
+                <p class="text-xs text-gray-500">Bấm vào sticker để gắn lên ảnh, kéo để di chuyển vị trí</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  onclick="addRandomCuteStickers()"
+                  class="cute-btn-secondary px-3 py-1.5 text-xs font-bold"
+                >
+                  ✨ Trang trí ngẫu nhiên
+                </button>
+                <button
+                  onclick="clearAllStickers()"
+                  class="text-xs font-bold text-gray-500 hover:text-red-500 underline"
+                >
+                  Xoá hết
+                </button>
+              </div>
+            </div>
+
+            <!-- Emoji Stickers Palette -->
+            <div id="emojiStickerPalette" class="grid grid-cols-6 sm:grid-cols-9 gap-2">
+              <!-- Populated via JS -->
+            </div>
+
+            <!-- Word Badges Palette -->
+            <div>
+              <p class="text-xs font-bold text-gray-500 mb-2">Nhãn chữ Y2K & Hàn Quốc:</p>
+              <div id="badgeStickerPalette" class="flex flex-wrap gap-2">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Custom Footer Caption & Date Stamp -->
+          <div id="customPanel_caption" class="mobile-step3-panel-hidden cute-card p-4 sm:p-6 space-y-4">
+            <h3 class="font-display text-base sm:text-lg font-bold text-pinky-700 flex items-center gap-2">
+              <span>💌</span> 4. Chữ Ký, Lời Nhắn & Ngày Tháng
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1">Tiêu đề dưới khung ảnh:</label>
+                <input
+                  type="text"
+                  id="captionTitleInput"
+                  value="Photobooth 💕"
+                  maxlength="28"
+                  oninput="updateCaptionSettings()"
+                  placeholder="Nhập tiêu đề..."
+                  class="w-full px-3.5 py-2 rounded-xl border-2 border-pinky-200 focus:border-pinky-500 focus:outline-none text-sm font-bold text-pinky-700"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-gray-600 mb-1">Lời nhắn phụ / Kỷ niệm:</label>
+                <input
+                  type="text"
+                  id="captionSubInput"
+                  value="Kỷ niệm đáng yêu ✨"
+                  maxlength="36"
+                  oninput="updateCaptionSettings()"
+                  placeholder="Nhập lời nhắn nhỏ..."
+                  class="w-full px-3.5 py-2 rounded-xl border-2 border-pinky-200 focus:border-pinky-500 focus:outline-none text-sm text-gray-700"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-pinky-100">
+              <!-- Font Selector -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-bold text-gray-600">Kiểu chữ:</span>
+                <button onclick="setCaptionFont('Pacifico')" data-font="Pacifico" class="font-btn theme-pill-btn active-pill px-3 py-1 rounded-full text-xs font-bold" style="font-family: 'Pacifico', cursive;">Viết tay</button>
+                <button onclick="setCaptionFont('Nunito Sans')" data-font="Nunito Sans" class="font-btn theme-pill-btn px-3 py-1 rounded-full text-xs font-display font-bold">Tròn trịa</button>
+                <button onclick="setCaptionFont('Quicksand')" data-font="Quicksand" class="font-btn theme-pill-btn px-3 py-1 rounded-full text-xs font-sans font-bold">Hiện đại</button>
+              </div>
+
+              <!-- Text Color & Date Stamp Toggle -->
+              <div class="flex items-center gap-4">
+                <label class="flex items-center gap-1.5 text-xs font-bold text-gray-600 cursor-pointer">
+                  <span>Màu chữ:</span>
+                  <input
+                    type="color"
+                    id="captionColorInput"
+                    value="#c41d7f"
+                    oninput="updateCaptionSettings()"
+                    class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent"
+                  />
+                </label>
+
+                <label class="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="showDateCheckbox"
+                    checked
+                    onchange="updateCaptionSettings()"
+                    class="w-4 h-4 accent-pinky-500 rounded"
+                  />
+                  <span>In ngày tháng</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       THANH ĐIỀU HƯỚNG DƯỚI ĐÁY DÀNH CHO ĐIỆN THOẠI (MOBILE BOTTOM NAV)
+       ========================================== -->
+  <nav id="mobileBottomNav" class="mobile-bottom-nav fixed bottom-0 inset-x-0 z-40 px-3 py-2 items-center justify-around gap-2">
+    <button
+      id="mStepTab1"
+      onclick="goToStep(1)"
+      class="flex-1 py-2 px-2 rounded-2xl text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all cute-btn-primary"
+    >
+      <i class="fa-solid fa-table-cells-large text-sm"></i>
+      <span>1. Bố Cục</span>
+    </button>
+
+    <button
+      id="mStepTab2"
+      onclick="goToStep(2)"
+      class="flex-1 py-2 px-2 rounded-2xl text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all step-tab-locked relative"
+    >
+      <div class="flex items-center gap-1">
+        <i id="mStepTab2Icon" class="fa-solid fa-lock text-xs"></i>
+        <span id="mStepTab2CountBadge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-pinky-100 text-pinky-600 hidden">0/4</span>
+      </div>
+      <span>2. Phòng Chụp</span>
+    </button>
+
+    <button
+      id="mStepTab3"
+      onclick="goToStep(3)"
+      class="flex-1 py-2 px-2 rounded-2xl text-xs font-bold flex flex-col items-center justify-center gap-1 transition-all step-tab-locked"
+    >
+      <i id="mStepTab3Icon" class="fa-solid fa-lock text-xs"></i>
+      <span>3. Trang Trí & In</span>
+    </button>
+  </nav>
+
+  <!-- ==========================================
+       MODAL 1: REALISTIC PHOTO BOOTH PRINTING
+       ========================================== -->
+  <div
+    id="printingModal"
+    class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+  >
+    <div class="cute-card max-w-md w-full p-6 text-center space-y-4 relative overflow-hidden">
+      <button
+        onclick="closePrintingModal()"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pinky-100 text-pinky-600 hover:bg-pinky-200 flex items-center justify-center font-bold"
+      >
+        ✕
+      </button>
+
+      <div class="space-y-1">
+        <span class="px-3 py-1 rounded-full bg-pinky-100 text-pinky-600 text-xs font-bold">
+          🖨️ Máy In Ảnh Hàn Quốc
+        </span>
+        <h3 id="printModalTitle" class="font-display text-2xl font-bold text-pinky-700">
+          Đang in ảnh của bạn...
+        </h3>
+        <p id="printModalStatus" class="text-xs text-gray-500">
+          Vui lòng đợi giây lát để ảnh trượt ra khỏi khe máy in nhé ✨
+        </p>
+      </div>
+
+      <!-- Printer Slot Hardware Visual -->
+      <div class="relative mx-auto w-full max-w-[280px] pt-3">
+        <!-- Metallic Pastel Printer Slot -->
+        <div class="relative z-20 h-6 bg-gradient-to-b from-pinky-300 to-pinky-400 rounded-full p-1.5 shadow-md border-2 border-pinky-500 flex items-center justify-center">
+          <div class="w-full h-2 bg-gray-900 rounded-full shadow-inner"></div>
+        </div>
+
+        <!-- Output Tray with Clipping Mask -->
+        <div class="relative z-10 overflow-hidden bg-pinky-50/70 border-x-2 border-b-2 border-pinky-200 rounded-b-3xl p-4 min-h-[320px] max-h-[380px] flex items-start justify-center shadow-inner">
+          <img
+            id="printedStripPreviewImg"
+            alt="Ảnh Photobooth đã in"
+            class="max-h-[340px] w-auto rounded-lg shadow-xl printing-strip-anim"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <a
+          id="downloadStripLink"
+          download="Photobooth-HanQuoc.png"
+          class="cute-btn-primary px-6 py-3 text-sm font-bold flex items-center gap-2 cursor-pointer"
+        >
+          <i class="fa-solid fa-download"></i>
+          <span>Tải Ảnh Về Máy Ngay</span>
+        </a>
+        <button
+          onclick="closePrintingModal()"
+          class="cute-btn-secondary px-5 py-3 text-sm font-bold"
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL MỚI: QUÉT MÃ QR TẢI ẢNH (QR CODE MODAL)
+       ========================================== -->
+  <div
+    id="qrCodeModal"
+    class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+  >
+    <div class="cute-card max-w-sm w-full p-6 text-center space-y-4 relative">
+      <button
+        onclick="closeQrCodeModal()"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pinky-100 text-pinky-600 hover:bg-pinky-200 flex items-center justify-center font-bold"
+      >
+        ✕
+      </button>
+
+      <div class="space-y-1">
+        <span class="px-3 py-1 rounded-full bg-pinky-100 text-pinky-600 text-xs font-bold">
+          📱 Quét Mã QR Tải Ảnh
+        </span>
+        <h3 class="font-display text-lg sm:text-xl font-bold text-pinky-700">
+          Mã QR Dải Ảnh Của Bạn
+        </h3>
+        <p class="text-xs text-gray-500">
+          Dùng camera điện thoại hoặc ứng dụng quét mã QR để tải ảnh về máy ngay lập tức ✨
+        </p>
+      </div>
+
+      <!-- Khung Hiển Thị Mã QR (Tạo bằng API công khai QRCode.js / QR Server) -->
+      <div class="bg-white p-4 rounded-3xl border-2 border-pinky-200 shadow-inner flex flex-col items-center justify-center">
+        <img
+          id="qrCodeImgImage"
+          alt="Mã QR Tải Ảnh"
+          class="w-56 h-56 object-contain rounded-xl shadow"
+        />
+        <p class="mt-2 text-[11px] text-gray-400 font-mono select-all truncate w-full max-w-[220px]" id="qrCodeLinkText">
+          Đang tạo mã QR...
+        </p>
+      </div>
+
+      <div class="pt-1">
+        <button
+          onclick="closeQrCodeModal()"
+          class="cute-btn-primary px-8 py-2.5 text-sm font-bold w-full"
+        >
+          Đã xong 💕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: ANIMATED MOMENT / GIF PREVIEW
+       ========================================== -->
+  <div
+    id="gifModal"
+    class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+  >
+    <div class="cute-card max-w-md w-full p-6 text-center space-y-4 relative">
+      <button
+        onclick="closeGifModal()"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pinky-100 text-pinky-600 hover:bg-pinky-200 flex items-center justify-center font-bold"
+      >
+        ✕
+      </button>
+
+      <div class="space-y-1">
+        <span class="px-3 py-1 rounded-full bg-pinky-100 text-pinky-600 text-xs font-bold">
+          🎞️ Khoảnh Khắc Chuyển Động
+        </span>
+        <h3 class="font-display text-xl font-bold text-pinky-700">
+          Xem Lại Khoảnh Khắc Đáng Yêu
+        </h3>
+        <p class="text-xs text-gray-500">Hiệu ứng chuyển cảnh liên tục giống mã QR tại tiệm Life4Cuts</p>
+      </div>
+
+      <div class="bg-pinky-50 p-3 rounded-3xl border-2 border-pinky-200 shadow-inner">
+        <canvas
+          id="gifPreviewCanvas"
+          width="640"
+          height="480"
+          class="w-full h-auto rounded-2xl shadow-md bg-white"
+        ></canvas>
+      </div>
+
+      <div class="flex items-center justify-center gap-3">
+        <span class="text-xs font-bold text-pinky-700">Tốc độ chuyển ảnh:</span>
+        <button onclick="setGifSpeed(650)" class="cute-btn-secondary px-3 py-1 text-xs font-bold">Chậm</button>
+        <button onclick="setGifSpeed(380)" class="cute-btn-secondary px-3 py-1 text-xs font-bold">Vừa</button>
+        <button onclick="setGifSpeed(200)" class="cute-btn-secondary px-3 py-1 text-xs font-bold">Nhanh</button>
+      </div>
+
+      <div class="pt-1">
+        <button onclick="closeGifModal()" class="cute-btn-primary px-8 py-2.5 text-sm font-bold">
+          Tuyệt vời 💕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 3: HOW TO USE GUIDE
+       ========================================== -->
+  <div
+    id="guideModal"
+    class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+  >
+    <div class="cute-card max-w-lg w-full p-6 space-y-4 relative">
+      <button
+        onclick="toggleGuideModal(false)"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pinky-100 text-pinky-600 hover:bg-pinky-200 flex items-center justify-center font-bold"
+      >
+        ✕
+      </button>
+
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-pinky-100 text-pinky-600 flex items-center justify-center text-xl">
+          🎀
+        </div>
+        <div>
+          <h3 class="font-display text-xl font-bold text-pinky-700">Hướng Dẫn Chụp Ảnh Photobooth</h3>
+          <p class="text-xs text-gray-500">Chỉ với 3 bước đơn giản để có ngay dải ảnh Hàn Quốc cực xinh</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-sm text-gray-700">
+        <div class="p-3.5 rounded-2xl bg-pinky-50/80 border border-pinky-200 flex gap-3">
+          <span class="font-display font-bold text-pinky-500 text-lg">01.</span>
+          <div>
+            <p class="font-bold text-pinky-700">Chọn Bố Cục Khung Ảnh</p>
+            <p class="text-xs text-gray-600">Chọn bố cục 4 ảnh dọc cổ điển (1x4), 3 ảnh, 2 ảnh, lưới 2x2, 2x3 hoặc khung Polaroid 1x1.</p>
+          </div>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-pinky-50/80 border border-pinky-200 flex gap-3">
+          <span class="font-display font-bold text-pinky-500 text-lg">02.</span>
+          <div>
+            <p class="font-bold text-pinky-700">Chụp Ảnh Hoặc Tải Ảnh Từ Máy</p>
+            <p class="text-xs text-gray-600">Chọn bộ lọc màu Hàn Quốc, bật hẹn giờ (3s/5s) và bấm chụp. Nếu muốn chụp lại 1 tấm bất kỳ, chỉ cần bấm vào tấm đó ở cột bên phải!</p>
+          </div>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-pinky-50/80 border border-pinky-200 flex gap-3">
+          <span class="font-display font-bold text-pinky-500 text-lg">03.</span>
+          <div>
+            <p class="font-bold text-pinky-700">Trang Trí Sticker & In Ảnh Lấy Liền</p>
+            <p class="text-xs text-gray-600">Đổi màu khung, hoạ tiết chấm bi/trái tim/hoa anh đào, gắn nhãn dán dễ thương, ghi lời nhắn và tải ảnh PNG chất lượng cao về máy.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-right pt-2">
+        <button onclick="toggleGuideModal(false)" class="cute-btn-primary px-6 py-2.5 text-sm font-bold">
+          Đã hiểu, bắt đầu thôi! ✨
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 4: CẬP NHẬT LINK FACEBOOK CÁ NHÂN
+       ========================================== -->
+  <div
+    id="facebookModal"
+    class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+  >
+    <div class="cute-card max-w-md w-full p-6 space-y-4 relative">
+      <button
+        onclick="closeFacebookModal()"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-pinky-100 text-pinky-600 hover:bg-pinky-200 flex items-center justify-center font-bold"
+      >
+        ✕
+      </button>
+
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl shadow">
+          <i class="fa-brands fa-facebook-f"></i>
+        </div>
+        <div>
+          <h3 class="font-display text-xl font-bold text-pinky-700">Gắn Link Facebook Cá Nhân</h3>
+          <p class="text-xs text-gray-500">Nhập đường dẫn trang cá nhân của bạn để nút Facebook mở trực tiếp</p>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-gray-600">Đường dẫn (URL) Facebook của bạn:</label>
+        <input
+          type="text"
+          id="facebookUrlInput"
+          placeholder="https://www.facebook.com/username"
+          class="w-full px-3.5 py-2.5 rounded-xl border-2 border-pinky-200 focus:border-pinky-500 focus:outline-none text-sm font-bold text-gray-800"
+        />
+        <p class="text-[11px] text-gray-500 leading-relaxed">
+          💡 <strong>Mẹo cho bạn:</strong> Bạn có thể dán link tại đây để lưu ngay trên trình duyệt, hoặc sửa trực tiếp biến <code class="px-1.5 py-0.5 rounded bg-pinky-100 text-pinky-700 font-bold">FACEBOOK_PROFILE_URL</code> ở dòng đầu tiên trong phần <code class="px-1 py-0.5 rounded bg-pinky-100 text-pinky-700">&lt;script&gt;</code> của file code.
+        </p>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button
+          onclick="closeFacebookModal()"
+          class="cute-btn-secondary px-4 py-2 text-xs sm:text-sm font-bold"
+        >
+          Huỷ
+        </button>
+        <button
+          onclick="saveCustomFacebookUrl()"
+          class="cute-btn-primary px-6 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-1.5"
+        >
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>Lưu Link Facebook</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div
+    id="toastBox"
+    class="fixed bottom-20 md:bottom-5 right-4 sm:right-5 z-50 pointer-events-none opacity-0 translate-y-3 transition-all duration-300 bg-gray-900/90 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs sm:text-sm font-bold flex items-center gap-2 border border-pinky-400"
+  >
+    <span id="toastIcon">✨</span>
+    <span id="toastMessage">Thông báo</span>
+  </div>
+
+  <!-- ==========================================
+       APPLICATION JAVASCRIPT
+       ========================================== -->
+  <script>
+    /**************************************************************
+     * 0. CẤU HÌNH LINK FACEBOOK CÁ NHÂN & CHẾ ĐỘ SÁNG/TỐI
+     * 👉 Dán link Facebook cá nhân của bạn vào giữa dấu ngoặc kép bên dưới:
+     **************************************************************/
+    const FACEBOOK_PROFILE_URL = "https://www.facebook.com/your.username";
+
+    /**************************************************************
+     * 1. CONFIGURATION & STATE
+     **************************************************************/
+    const LAYOUTS = [
+      {
+        id: '1x4',
+        name: '1x4 - 4 Ảnh Dọc',
+        subtitle: 'Chuẩn Life4Cuts Hàn Quốc',
+        badge: 'Phổ biến nhất 🔥',
+        cols: 1,
+        rows: 4,
+        total: 4,
+        aspect: 4 / 3
+      },
+      {
+        id: '1x3',
+        name: '1x3 - 3 Ảnh Dọc',
+        subtitle: 'Dải ảnh gọn xinh tinh tế',
+        badge: 'Dễ thương 💕',
+        cols: 1,
+        rows: 3,
+        total: 3,
+        aspect: 4 / 3
+      },
+      {
+        id: '2x2',
+        name: '2x2 - 4 Ảnh Lưới',
+        subtitle: 'Khung lưới 4 ô năng động',
+        badge: 'Hot Trend ✨',
+        cols: 2,
+        rows: 2,
+        total: 4,
+        aspect: 4 / 3
+      },
+      {
+        id: '1x2',
+        name: '1x2 - 2 Ảnh Đôi',
+        subtitle: 'Dành cho cặp đôi & bạn thân',
+        badge: 'Couple 🍒',
+        cols: 1,
+        rows: 2,
+        total: 2,
+        aspect: 4 / 3
+      },
+      {
+        id: '2x3',
+        name: '2x3 - 6 Ảnh Lưới',
+        subtitle: 'Lưu trọn 6 khoảnh khắc vui nhộn',
+        badge: 'Siêu nhiều ảnh 🎀',
+        cols: 2,
+        rows: 3,
+        total: 6,
+        aspect: 4 / 3
+      },
+      {
+        id: '1x1',
+        name: '1x1 - Ảnh Polaroid',
+        subtitle: 'Khung ảnh đơn cổ điển lãng mạn',
+        badge: 'Polaroid 🌸',
+        cols: 1,
+        rows: 1,
+        total: 1,
+        aspect: 4 / 3
+      }
+    ];
+
+    const FILTERS = [
+      { id: 'normal', name: 'Gốc', icon: '✨', css: 'none' },
+      { id: 'korean', name: 'Hàn Quốc', icon: '🌸', css: 'brightness(1.08) contrast(0.95) saturate(1.12)' },
+      { id: 'peach', name: 'Hồng Đào', icon: '🍑', css: 'brightness(1.06) contrast(0.98) saturate(1.25) hue-rotate(-8deg)' },
+      { id: 'bw', name: 'Trắng Đen', icon: '🖤', css: 'grayscale(1) contrast(1.12) brightness(1.04)' },
+      { id: 'vintage', name: 'Cổ Điển', icon: '🎞️', css: 'sepia(0.45) contrast(1.05) brightness(1.02) saturate(0.9)' },
+      { id: 'retro', name: 'Retro 90s', icon: '📼', css: 'sepia(0.22) contrast(1.1) brightness(1.05) saturate(1.25)' },
+      { id: 'cool', name: 'Lạnh', icon: '❄️', css: 'brightness(1.05) saturate(1.08) hue-rotate(12deg)' },
+      { id: 'dreamy', name: 'Mơ Màng', icon: '☁️', css: 'brightness(1.12) contrast(0.9) saturate(1.18)' }
+    ];
+
+    const SOLID_COLORS = [
+      { name: 'Trắng Tinh', hex: '#ffffff', text: '#c41d7f' },
+      { name: 'Hồng Pastel', hex: '#ffd6e7', text: '#9e1068' },
+      { name: 'Hồng Đào', hex: '#ffadd2', text: '#780650' },
+      { name: 'Đen Cá Tính', hex: '#1f1f26', text: '#ffd6e7' },
+      { name: 'Xanh Baby', hex: '#d6e4ff', text: '#1d39c4' },
+      { name: 'Tím Lavender', hex: '#efdbff', text: '#531dab' },
+      { name: 'Vàng Bơ', hex: '#fff1b8', text: '#ad6800' },
+      { name: 'Xanh Mint', hex: '#d9f7be', text: '#237804' },
+      { name: 'Kem Ấm', hex: '#fff7e6', text: '#874d00' },
+      { name: 'Đỏ Nhung', hex: '#820014', text: '#ffd6e7' }
+    ];
+
+    const GRADIENTS = [
+      { name: 'Kẹo Bông 🍬', stops: ['#ffd6e7', '#d6e4ff'], text: '#9e1068' },
+      { name: 'Hoàng Hôn 🌅', stops: ['#ffadd2', '#efdbff', '#ffd8bf'], text: '#780650' },
+      { name: 'Đào Sữa 🍑', stops: ['#fff0f6', '#ffd6e7', '#ffe7ba'], text: '#c41d7f' },
+      { name: 'Ngân Hà 🌌', stops: ['#22075e', '#780650', '#eb2f96'], text: '#ffffff' }
+    ];
+
+    const PATTERNS = [
+      { id: 'solid', name: 'Trơn (Solid)', icon: '⬜' },
+      { id: 'dots', name: 'Chấm Bi', icon: '⚪' },
+      { id: 'checkered', name: 'Kẻ Caro', icon: '🏁' },
+      { id: 'hearts', name: 'Trái Tim', icon: '💖' },
+      { id: 'stars', name: 'Ngôi Sao', icon: '⭐' },
+      { id: 'sakura', name: 'Hoa Anh Đào', icon: '🌸' },
+      { id: 'film', name: 'Cuộn Phim', icon: '🎞️' },
+      { id: 'y2k', name: 'Y2K Sparkle', icon: '✨' }
+    ];
+
+    const EMOJI_STICKERS = [
+      '🎀', '💖', '✨', '🌸', '👑', '🐰', '🐱', '🍒', '🧸',
+      '⭐', '🦋', '🍓', '😎', '💌', '🌷', '🐾', '🍭', '🎵'
+    ];
+
+    const BADGE_STICKERS = [
+      { text: 'LOVE 💕', bg: '#ff85c0', color: '#ffffff' },
+      { text: 'CUTE ✨', bg: '#fff0f6', color: '#eb2f96' },
+      { text: 'BESTIE 👯‍♀️', bg: '#efdbff', color: '#531dab' },
+      { text: 'Y2K 💿', bg: '#1f1f26', color: '#ffd6e7' },
+      { text: 'XOXO 💋', bg: '#ffd6e7', color: '#c41d7f' },
+      { text: 'LIFE4CUTS 📸', bg: '#d6e4ff', color: '#1d39c4' }
+    ];
+
+    const POSE_GUIDES = [
+      {
+        title: 'Gợi ý dáng 1: Tạo dáng chữ V đáng yêu ✌️',
+        svg: `<svg viewBox="0 0 200 200" class="w-full h-full stroke-pink-200 fill-none" stroke-width="4" stroke-linecap="round">
+                <circle cx="100" cy="75" r="38" stroke-dasharray="6 4"/>
+                <path d="M50 185 C55 135, 145 135, 150 185" stroke-dasharray="6 4"/>
+                <path d="M142 85 L155 50 M142 85 L168 58" stroke="#ff85c0" stroke-width="5"/>
+              </svg>`
+      },
+      {
+        title: 'Gợi ý dáng 2: Trái tim lên má ngọt ngào 🫶',
+        svg: `<svg viewBox="0 0 200 200" class="w-full h-full stroke-pink-200 fill-none" stroke-width="4" stroke-linecap="round">
+                <circle cx="100" cy="75" r="38" stroke-dasharray="6 4"/>
+                <path d="M48 185 C55 135, 145 135, 152 185" stroke-dasharray="6 4"/>
+                <path d="M100 130 C85 112, 65 125, 100 152 C135 125, 115 112, 100 130 Z" stroke="#ff85c0" stroke-width="5"/>
+              </svg>`
+      },
+      {
+        title: 'Gợi ý dáng 3: Tai mèo tinh nghịch 🐱',
+        svg: `<svg viewBox="0 0 200 200" class="w-full h-full stroke-pink-200 fill-none" stroke-width="4" stroke-linecap="round">
+                <circle cx="100" cy="82" r="38" stroke-dasharray="6 4"/>
+                <polygon points="65,55 75,28 92,48" stroke="#ff85c0" stroke-width="5"/>
+                <polygon points="135,55 125,28 108,48" stroke="#ff85c0" stroke-width="5"/>
+                <path d="M50 185 C55 140, 145 140, 150 185" stroke-dasharray="6 4"/>
+              </svg>`
+      }
+    ];
+
+    // Global State Object
+    const state = {
+      currentStep: 1,
+      selectedLayoutId: null, // Bắt buộc người dùng chọn bố cục ở Bước 1 trước khi mở khóa Bước 2
+      soundEnabled: true,
+      darkMode: false,
+      isMobileDevice: false,
+      mobilePreviewExpanded: false,
+      activeMobileCustomTab: 'color',
+      cameraFacingMode: 'user',
+      facebookUrl: FACEBOOK_PROFILE_URL,
+
+      // Camera & Studio
+      stream: null,
+      cameraActive: false,
+      mirror: true,
+      countdownSeconds: 3,
+      autoShoot: true,
+      isCapturing: false,
+      brightness: 104,
+      selectedFilterId: 'normal',
+      poseGuideIndex: -1,
+      retakeSlotIndex: null, // If non-null, next shot replaces this slot
+      uploadTargetSlotIndex: null,
+
+      // Captured Photos Array (DataURLs)
+      photos: [],
+
+      // Customization State
+      frameFillType: 'solid', // 'solid' | 'gradient'
+      frameSolidColor: '#ffd6e7',
+      frameGradientIndex: -1,
+      frameGradientStops: ['#ffd6e7', '#d6e4ff'],
+      patternId: 'dots',
+      cornerRadius: 16,
+      innerWhiteBorder: true,
+      captionTitle: 'Photobooth 💕',
+      captionSubtitle: 'Kỷ niệm đáng yêu ✨',
+      captionFont: 'Pacifico',
+      captionColor: '#9e1068',
+      showDate: true,
+
+      // Stickers List
+      stickers: [],
+      selectedStickerId: null,
+
+      // GIF Modal Loop
+      gifInterval: null,
+      gifSpeed: 380,
+      gifFrameIndex: 0
+    };
+
+    // Audio Context for fallback synthesized tones
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    /**************************************************************
+     * 2. AUDIO ENGINE (ORIGINAL ASSETS + SYNTH FALLBACK)
+     **************************************************************/
+    function playBeepSound(isFinal = false) {
+      if (!state.soundEnabled) return;
+      const beepEl = document.getElementById('beepSound');
+      if (beepEl) {
+        beepEl.currentTime = 0;
+        beepEl.play().catch(() => synthBeep(isFinal));
+      } else {
+        synthBeep(isFinal);
+      }
+    }
+
+    function playShutterSound() {
+      if (!state.soundEnabled) return;
+      const shutterEl = document.getElementById('shutterSound');
+      if (shutterEl) {
+        shutterEl.currentTime = 0;
+        shutterEl.play().catch(() => synthShutter());
+      } else {
+        synthShutter();
+      }
+    }
+
+    function synthBeep(isFinal = false) {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(isFinal ? 1046.5 : 784, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.19);
+      } catch (e) {}
+    }
+
+    function synthShutter() {
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const bufferSize = ctx.sampleRate * 0.12;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.03));
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        noise.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start();
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      const icon = document.getElementById('soundIcon');
+      const label = document.getElementById('soundLabel');
+      if (state.soundEnabled) {
+        icon.className = 'fa-solid fa-volume-high text-pinky-500';
+        label.textContent = 'Âm thanh';
+        synthBeep(true);
+        showToast('🔊 Đã bật âm thanh chụp ảnh');
+      } else {
+        icon.className = 'fa-solid fa-volume-xmark text-gray-400';
+        label.textContent = 'Đã tắt';
+        showToast('🔇 Đã tắt âm thanh');
+      }
+    }
+
+    /**************************************************************
+     * 3. INITIALIZATION, AUTO MOBILE DETECTION & SOURCE PROTECTION
+     **************************************************************/
+    window.onload = function () {
+      initSourceCodeProtection();
+      detectAndApplyMobileDevice();
+      initThemeAndSocialLink();
+      initFloatingBackground();
+      renderLayoutSelectionCards();
+      renderFilterBar();
+      renderCapturedSlots();
+      renderCustomizationPalettes();
+      updateStepProgressionUI();
+
+      window.addEventListener('resize', () => {
+        detectAndApplyMobileDevice();
+      });
+      window.addEventListener('orientationchange', () => {
+        setTimeout(detectAndApplyMobileDevice, 150);
+      });
+    };
+
+    // Tự động nhận diện thiết bị Điện thoại (qua User-Agent hoặc chiều ngang màn hình < 768px)
+    function detectAndApplyMobileDevice() {
+      const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent || ''
+      );
+      const screenMobile = window.innerWidth < 768;
+      const isMobile = uaMobile || screenMobile;
+
+      state.isMobileDevice = isMobile;
+      document.body.classList.toggle('is-mobile-device', isMobile);
+
+      // Tự động hiện nút Đổi Camera Trước/Sau nếu truy cập bằng điện thoại
+      const switchCamBtn = document.getElementById('switchCamFacingBtn');
+      if (switchCamBtn) {
+        switchCamBtn.classList.toggle('md:hidden', !uaMobile);
+      }
+
+      const previewSizeBtn = document.getElementById('mobilePreviewSizeBtn');
+      if (previewSizeBtn) {
+        previewSizeBtn.classList.toggle('md:hidden', !uaMobile);
+      }
+    }
+
+    // Hệ thống bảo vệ mã nguồn: Chặn chuột phải, F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S (Vẫn cho phép bôi đen & kéo thả ảnh)
+    function initSourceCodeProtection() {
+      // 1. Chặn menu chuột phải (Context Menu)
+      document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        return false;
+      });
+
+      // 2. Chặn các tổ hợp phím tắt mở DevTools / Xem mã nguồn / Lưu trang
+      window.addEventListener('keydown', function (e) {
+        const key = (e.key || '').toUpperCase();
+        const keyCode = e.keyCode || e.which;
+
+        // F12
+        const isF12 = key === 'F12' || keyCode === 123;
+        // Ctrl+Shift+I / J / C / K (Windows/Linux) hoặc Cmd+Option+I / J / C / U (macOS)
+        const isCtrlShiftInspect =
+          (e.ctrlKey && e.shiftKey && ['I', 'J', 'C', 'K'].includes(key)) ||
+          (e.metaKey && e.altKey && ['I', 'J', 'C', 'U'].includes(key));
+        // Ctrl+U (View Source) hoặc Ctrl+S (Save Page)
+        const isViewSourceOrSave =
+          (e.ctrlKey || e.metaKey) && ['U', 'S'].includes(key);
+
+        if (isF12 || isCtrlShiftInspect || isViewSourceOrSave) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, true);
+    }
+
+    // Khởi tạo Chế độ Sáng/Tối & Link Facebook cá nhân
+    function initThemeAndSocialLink() {
+      try {
+        const savedTheme = localStorage.getItem('panbap_photobooth_theme');
+        // Mặc định hiển thị Chế độ Tối giống hình mẫu nếu người dùng chưa từng đổi
+        state.darkMode = savedTheme ? savedTheme === 'dark' : true;
+        applyBodyThemeClass();
+        updateThemeButtonUI();
+
+        const savedFbUrl = localStorage.getItem('panbap_facebook_url');
+        state.facebookUrl = (savedFbUrl && savedFbUrl.trim() !== '') ? savedFbUrl.trim() : FACEBOOK_PROFILE_URL;
+        updateFacebookButtonHref();
+      } catch (e) {
+        state.darkMode = true;
+        applyBodyThemeClass();
+        updateThemeButtonUI();
+        updateFacebookButtonHref();
+      }
+    }
+
+    function applyBodyThemeClass() {
+      document.body.classList.toggle('dark-mode', state.darkMode);
+    }
+
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+
+      // Hiệu ứng xoay mượt icon Mặt Trăng / Mặt Trời
+      const icon = document.getElementById('themeIcon');
+      if (icon) {
+        icon.classList.remove('theme-icon-spin');
+        void icon.offsetWidth;
+        icon.classList.add('theme-icon-spin');
+        setTimeout(() => icon.classList.remove('theme-icon-spin'), 460);
+      }
+
+      // Sử dụng requestAnimationFrame để đồng bộ quá trình đổi màu toàn bộ thẻ ở Bước 3 đạt 60fps
+      requestAnimationFrame(() => {
+        applyBodyThemeClass();
+        updateThemeButtonUI();
+      });
+
+      try {
+        localStorage.setItem('panbap_photobooth_theme', state.darkMode ? 'dark' : 'light');
+      } catch (e) {}
+      showToast(
+        state.darkMode ? '🌙 Đã chuyển sang Chế độ Tối (Dark Mode)' : '☀️ Đã chuyển sang Chế độ Sáng (Light Mode)',
+        state.darkMode ? '🌙' : '☀️'
+      );
+    }
+
+    function updateThemeButtonUI() {
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (!icon || !label) return;
+      if (state.darkMode) {
+        icon.className = 'fa-solid fa-sun text-amber-400';
+        label.textContent = 'Chế độ Sáng';
+      } else {
+        icon.className = 'fa-solid fa-moon text-pinky-500';
+        label.textContent = 'Chế độ Tối';
+      }
+    }
+
+    function updateFacebookButtonHref() {
+      const fbLinkEl = document.getElementById('facebookProfileLink');
+      if (fbLinkEl) {
+        fbLinkEl.href = state.facebookUrl || FACEBOOK_PROFILE_URL;
+      }
+    }
+
+    function openFacebookModal() {
+      const input = document.getElementById('facebookUrlInput');
+      if (input) {
+        input.value = state.facebookUrl || FACEBOOK_PROFILE_URL;
+      }
+      document.getElementById('facebookModal').classList.remove('hidden');
+    }
+
+    function closeFacebookModal() {
+      document.getElementById('facebookModal').classList.add('hidden');
+    }
+
+    function saveCustomFacebookUrl() {
+      const input = document.getElementById('facebookUrlInput');
+      let url = (input ? input.value.trim() : '') || FACEBOOK_PROFILE_URL;
+      if (url && !/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+      state.facebookUrl = url;
+      updateFacebookButtonHref();
+      try {
+        localStorage.setItem('panbap_facebook_url', url);
+      } catch (e) {}
+      closeFacebookModal();
+      showToast('💙 Đã cập nhật đường dẫn Facebook cá nhân!');
+    }
+
+    function initFloatingBackground() {
+      const container = document.getElementById('floatingBg');
+      const icons = ['🌸', '💖', '✨', '🎀', '🌷', '⭐', '🫧', '💕'];
+      let html = '';
+      for (let i = 0; i < 18; i++) {
+        const icon = icons[i % icons.length];
+        const left = (i * 6 + Math.random() * 5) % 98;
+        const duration = 14 + (i % 7) * 2.5;
+        const delay = -(Math.random() * 18);
+        const size = 14 + (i % 4) * 5;
+        html += `<div class="float-item" style="left:${left}%; font-size:${size}px; animation-duration:${duration}s; animation-delay:${delay}s;">${icon}</div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function getCurrentLayout() {
+      return LAYOUTS.find(l => l.id === state.selectedLayoutId) || LAYOUTS[0];
+    }
+
+    function getCurrentFilter() {
+      return FILTERS.find(f => f.id === state.selectedFilterId) || FILTERS[0];
+    }
+
+    function isStep1Complete() {
+      return state.selectedLayoutId !== null;
+    }
+
+    function isStep2Complete() {
+      if (!isStep1Complete()) return false;
+      const layout = getCurrentLayout();
+      const filledCount = state.photos.filter(p => p !== null).length;
+      return state.photos.length === layout.total && filledCount === layout.total;
+    }
+
+    // Cập nhật giao diện trạng thái khóa / mở khóa các bước
+    function updateStepProgressionUI() {
+      const step1Done = isStep1Complete();
+      const step2Done = isStep2Complete();
+      const layout = getCurrentLayout();
+      const filledCount = state.photos.filter(p => p !== null).length;
+
+      // 1. Update Step 1 Bottom CTA Buttons
+      const step1NextBtn = document.getElementById('step1NextBtn');
+      const step1UploadBtn = document.getElementById('step1UploadBtn');
+      if (step1NextBtn && step1UploadBtn) {
+        if (step1Done) {
+          step1NextBtn.disabled = false;
+          step1NextBtn.className = 'cute-btn-primary flex-1 sm:flex-initial justify-center px-4 sm:px-8 py-2.5 sm:py-3.5 text-xs sm:text-base font-bold flex items-center gap-2';
+          step1NextBtn.innerHTML = `<span>Vào Phòng Chụp Ngay 📸</span><i class="fa-solid fa-arrow-right"></i>`;
+
+          step1UploadBtn.disabled = false;
+          step1UploadBtn.className = 'cute-btn-secondary flex-1 sm:flex-initial justify-center px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold flex items-center gap-2';
+          step1UploadBtn.innerHTML = `<i class="fa-solid fa-folder-open"></i><span>Chọn ảnh từ máy</span>`;
+        } else {
+          step1NextBtn.disabled = true;
+          step1NextBtn.className = 'cute-btn-locked flex-1 sm:flex-initial justify-center px-4 sm:px-7 py-2.5 sm:py-3.5 text-xs sm:text-base font-bold flex items-center gap-2';
+          step1NextBtn.innerHTML = `<i class="fa-solid fa-lock text-sm"></i><span>🔒 Chọn 1 bố cục để tiếp tục</span>`;
+
+          step1UploadBtn.disabled = true;
+          step1UploadBtn.className = 'cute-btn-locked flex-1 sm:flex-initial justify-center px-3.5 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold flex items-center gap-2';
+          step1UploadBtn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i><span>🔒 Chọn ảnh từ máy</span>`;
+        }
+      }
+
+      // 2. Update Step 2 -> Step 3 Button (#toStep3Btn)
+      const toStep3Btn = document.getElementById('toStep3Btn');
+      if (toStep3Btn) {
+        if (step2Done) {
+          toStep3Btn.disabled = false;
+          toStep3Btn.className = 'w-full cute-btn-primary py-3.5 px-6 text-base font-bold flex items-center justify-center gap-2';
+          toStep3Btn.innerHTML = `<span>Trang Trí Khung & In Ảnh 🎨</span><i class="fa-solid fa-arrow-right"></i>`;
+        } else {
+          const totalNeeded = step1Done ? layout.total : 4;
+          toStep3Btn.disabled = true;
+          toStep3Btn.className = 'w-full cute-btn-locked py-3.5 px-5 text-xs sm:text-sm font-bold flex items-center justify-center gap-2';
+          toStep3Btn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i><span>🔒 Chụp đủ ảnh để mở khóa (${filledCount}/${totalNeeded})</span>`;
+        }
+      }
+
+      // 3. Update Top Header Stepper Navigation Tabs (Desktop)
+      const tab1 = document.getElementById('stepTab1');
+      const tab2 = document.getElementById('stepTab2');
+      const tab3 = document.getElementById('stepTab3');
+      const lock2 = document.getElementById('stepTab2LockIcon');
+      const lock3 = document.getElementById('stepTab3LockIcon');
+
+      if (lock2) lock2.className = step1Done ? 'fa-solid fa-camera text-xs' : 'fa-solid fa-lock text-xs';
+      if (lock3) lock3.className = step2Done ? 'fa-solid fa-wand-magic-sparkles text-xs' : 'fa-solid fa-lock text-xs';
+
+      const activeTabClass = 'step-tab cute-btn-primary flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all';
+      const unlockedTabClass = 'step-tab cute-btn-secondary flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all';
+      const lockedTabClass = 'step-tab step-tab-locked flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all';
+
+      if (tab1) tab1.className = state.currentStep === 1 ? activeTabClass : unlockedTabClass;
+      if (tab2) {
+        if (state.currentStep === 2) tab2.className = activeTabClass;
+        else if (step1Done) tab2.className = unlockedTabClass;
+        else tab2.className = lockedTabClass;
+      }
+      if (tab3) {
+        if (state.currentStep === 3) tab3.className = activeTabClass;
+        else if (step2Done) tab3.className = unlockedTabClass;
+        else tab3.className = lockedTabClass;
+      }
+
+      // 4. Update Mobile Bottom Navigation Bar (#mobileBottomNav)
+      const mTab1 = document.getElementById('mStepTab1');
+      const mTab2 = document.getElementById('mStepTab2');
+      const mTab3 = document.getElementById('mStepTab3');
+      const mIcon2 = document.getElementById('mStepTab2Icon');
+      const mIcon3 = document.getElementById('mStepTab3Icon');
+      const mBadge2 = document.getElementById('mStepTab2CountBadge');
+
+      const mActiveClass = 'flex-1 py-2 px-2 rounded-2xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 transition-all cute-btn-primary';
+      const mUnlockedClass = 'flex-1 py-2 px-2 rounded-2xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 transition-all cute-btn-secondary';
+      const mLockedClass = 'flex-1 py-2 px-2 rounded-2xl text-xs font-bold flex flex-col items-center justify-center gap-0.5 transition-all step-tab-locked';
+
+      if (mTab1) mTab1.className = state.currentStep === 1 ? mActiveClass : mUnlockedClass;
+      if (mTab2) {
+        if (state.currentStep === 2) mTab2.className = mActiveClass;
+        else if (step1Done) mTab2.className = mUnlockedClass;
+        else mTab2.className = mLockedClass;
+      }
+      if (mTab3) {
+        if (state.currentStep === 3) mTab3.className = mActiveClass;
+        else if (step2Done) mTab3.className = mUnlockedClass;
+        else mTab3.className = mLockedClass;
+      }
+
+      if (mIcon2) mIcon2.className = step1Done ? 'fa-solid fa-camera text-sm' : 'fa-solid fa-lock text-xs';
+      if (mIcon3) mIcon3.className = step2Done ? 'fa-solid fa-wand-magic-sparkles text-sm' : 'fa-solid fa-lock text-xs';
+      if (mBadge2) {
+        if (step1Done) {
+          mBadge2.classList.remove('hidden');
+          mBadge2.textContent = `${filledCount}/${layout.total}`;
+        } else {
+          mBadge2.classList.add('hidden');
+        }
+      }
+    }
+
+    // Chuyển tab trang trí ở Bước 3 trên Điện thoại
+    function selectMobileCustomTab(tabId) {
+      state.activeMobileCustomTab = tabId;
+      const panels = ['color', 'pattern', 'sticker', 'caption'];
+      panels.forEach(p => {
+        const el = document.getElementById(`customPanel_${p}`);
+        if (el) {
+          el.classList.toggle('mobile-step3-panel-hidden', p !== tabId);
+        }
+      });
+
+      document.querySelectorAll('.mobile-cust-tab').forEach(btn => {
+        const bTab = btn.getAttribute('data-mtab');
+        btn.classList.toggle('active-pill', bTab === tabId);
+      });
+    }
+
+    // Thu nhỏ / Phóng to khung xem trước ảnh ở Bước 3 trên Điện thoại
+    function toggleMobilePreviewExpand() {
+      state.mobilePreviewExpanded = !state.mobilePreviewExpanded;
+      const stageBox = document.getElementById('stripPreviewStageBox');
+      const label = document.getElementById('mobilePreviewSizeLabel');
+      if (stageBox) {
+        stageBox.classList.toggle('mobile-compact-preview', !state.mobilePreviewExpanded);
+        stageBox.classList.toggle('mobile-expanded-preview', state.mobilePreviewExpanded);
+      }
+      if (label) {
+        label.textContent = state.mobilePreviewExpanded ? 'Thu gọn ảnh' : 'Phóng to ảnh';
+      }
+    }
+
+    /**************************************************************
+     * 4. STEP 1: LAYOUT SELECTION
+     **************************************************************/
+    function renderLayoutSelectionCards() {
+      const grid = document.getElementById('layoutGrid');
+      grid.innerHTML = LAYOUTS.map(layout => {
+        const isSelected = layout.id === state.selectedLayoutId;
+        // Generate mini wireframe slots
+        let slotsHtml = '';
+        for (let i = 0; i < layout.total; i++) {
+          slotsHtml += `<div class="bg-pinky-200/80 border border-pinky-300 rounded-md flex items-center justify-center text-[10px] text-pinky-600 font-bold aspect-[4/3]">${i + 1}</div>`;
+        }
+
+        const gridColsClass = layout.cols === 2 ? 'grid-cols-2 w-24 sm:w-28' : 'grid-cols-1 w-14 sm:w-16';
+
+        return `
+          <div
+            onclick="selectLayout('${layout.id}')"
+            ondblclick="selectLayout('${layout.id}'); goToStep(2);"
+            class="layout-card cute-card p-3 sm:p-5 cursor-pointer flex flex-col justify-between relative ${isSelected ? 'selected' : ''}"
+          >
+            <div class="flex items-start justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+              <div class="min-w-0">
+                <span class="inline-block text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 rounded-full bg-pinky-100 text-pinky-600 mb-1 truncate max-w-full">
+                  ${layout.badge}
+                </span>
+                <h3 class="font-display text-sm sm:text-lg font-extrabold text-gray-800 leading-tight">${layout.name}</h3>
+                <p class="text-[11px] sm:text-xs text-gray-500 line-clamp-1">${layout.subtitle}</p>
+              </div>
+              <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex-shrink-0 flex items-center justify-center ${isSelected ? 'bg-pinky-500 text-white shadow' : 'bg-pinky-100 text-pinky-400'}">
+                <i class="fa-solid ${isSelected ? 'fa-check' : 'fa-plus'} text-xs"></i>
+              </div>
+            </div>
+
+            <!-- Visual Mini Strip Wireframe -->
+            <div class="my-2 sm:my-3 py-3 sm:py-4 bg-pinky-50/70 rounded-2xl border border-pinky-100 flex items-center justify-center">
+              <div class="bg-white p-1.5 sm:p-2 pb-3 sm:pb-4 rounded-xl shadow-md border border-pinky-200">
+                <div class="grid ${gridColsClass} gap-1 sm:gap-1.5">
+                  ${slotsHtml}
+                </div>
+                <div class="mt-1.5 sm:mt-2 h-1.5 w-8 sm:w-10 mx-auto rounded-full bg-pinky-200"></div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-pinky-600 pt-2 border-t border-pinky-100">
+              <span>${layout.total} ảnh</span>
+              <span>${isSelected ? 'Đã chọn ✓' : 'Chọn →'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectLayout(layoutId) {
+      state.selectedLayoutId = layoutId;
+      const layout = getCurrentLayout();
+
+      // Adjust state.photos array length while preserving already taken photos
+      const newPhotos = new Array(layout.total).fill(null);
+      for (let i = 0; i < Math.min(state.photos.length, layout.total); i++) {
+        newPhotos[i] = state.photos[i];
+      }
+      state.photos = newPhotos;
+      state.retakeSlotIndex = null;
+
+      document.getElementById('selectedLayoutSummary').textContent = `${layout.name} (${layout.subtitle})`;
+      document.getElementById('studioLayoutBadge').textContent = `${layout.id} (${layout.total} Ảnh)`;
+
+      renderLayoutSelectionCards();
+      renderCapturedSlots();
+      updateCaptureButtonState();
+      updateStepProgressionUI();
+      showToast(`✨ Đã chọn khung ${layout.name}! Bấm "Vào Phòng Chụp Ngay" để tiếp tục.`);
+    }
+
+    function startStudioWithUpload() {
+      if (!isStep1Complete()) {
+        showToast('Please chọn một bố cục khung ảnh trước nhé!', '🔒');
+        return;
+      }
+      goToStep(2);
+      setTimeout(() => {
+        triggerMultiUpload();
+      }, 250);
+    }
+
+    /**************************************************************
+     * 5. NAVIGATION BETWEEN STEPS (STRICT LOCKING)
+     **************************************************************/
+    function goToStep(stepNumber) {
+      if (state.isCapturing) return;
+
+      // Guard Step 2: Must select a layout in Step 1 first
+      if (stepNumber >= 2 && !isStep1Complete()) {
+        showToast('Vui lòng chọn một bố cục khung ảnh ở Bước 1 trước khi vào Phòng Chụp!', '🔒');
+        return;
+      }
+
+      // Guard Step 3: Must fill ALL photo slots for the selected layout first
+      if (stepNumber === 3 && !isStep2Complete()) {
+        const layout = getCurrentLayout();
+        const filledCount = state.photos.filter(p => p !== null).length;
+        showToast(`Bạn mới có ${filledCount}/${layout.total} ảnh. Hãy chụp hoặc tải lên đủ ảnh để qua bước Trang Trí & In nhé!`, '🔒');
+        return;
+      }
+
+      state.currentStep = stepNumber;
+
+      document.getElementById('step1Section').classList.toggle('hidden', stepNumber !== 1);
+      document.getElementById('step2Section').classList.toggle('hidden', stepNumber !== 2);
+      document.getElementById('step3Section').classList.toggle('hidden', stepNumber !== 3);
+
+      updateStepProgressionUI();
+
+      if (stepNumber === 2) {
+        if (!state.stream) {
+          initCamera();
+        }
+        renderCapturedSlots();
+        updateCaptureButtonState();
+      } else if (stepNumber === 3) {
+        renderCompositePhotoStrip();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /**************************************************************
+     * 6. STEP 2: REAL WEBCAM STUDIO & UPLOAD
+     **************************************************************/
+    async function initCamera() {
+      const video = document.getElementById('webcamVideo');
+      const placeholder = document.getElementById('cameraPlaceholderOverlay');
+
+      try {
+        if (state.stream) {
+          state.stream.getTracks().forEach(t => t.stop());
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 960 },
+            facingMode: state.cameraFacingMode || 'user'
+          },
+          audio: false
+        });
+        state.stream = stream;
+        state.cameraActive = true;
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+        applyLiveVideoStyles();
+        showToast('📸 Đã kết nối Camera thành công!');
+      } catch (err) {
+        state.stream = null;
+        state.cameraActive = false;
+        video.classList.add('hidden');
+        if (placeholder) placeholder.classList.remove('hidden');
+        showToast('📷 Không tìm thấy Camera. Bạn có thể bấm "Tải ảnh lên" để chọn ảnh từ máy nhé!', '💡');
+      }
+    }
+
+    async function switchCameraFacingMode() {
+      state.cameraFacingMode = state.cameraFacingMode === 'user' ? 'environment' : 'user';
+      // Khi dùng camera sau trên điện thoại, tự động tắt lật gương để ảnh đúng chiều thực tế
+      state.mirror = state.cameraFacingMode === 'user';
+      const mirrorBtn = document.getElementById('mirrorToggleBtn');
+      if (mirrorBtn) {
+        mirrorBtn.querySelector('span').textContent = `Lật gương: ${state.mirror ? 'Bật' : 'Tắt'}`;
+        mirrorBtn.classList.toggle('active-pill', state.mirror);
+      }
+      await initCamera();
+      showToast(
+        state.cameraFacingMode === 'user' ? '🤳 Đã chuyển sang Camera trước' : '📷 Đã chuyển sang Camera sau'
+      );
+    }
+
+    /**************************************************************
+     * 7. CAMERA CONTROLS & FILTERS
+     **************************************************************/
+    function buildCombinedCssFilter() {
+      const f = getCurrentFilter();
+      const baseFilter = f.css === 'none' ? '' : f.css;
+      const bright = `brightness(${state.brightness / 100})`;
+      return `${bright} ${baseFilter}`.trim();
+    }
+
+    function applyLiveVideoStyles() {
+      const video = document.getElementById('webcamVideo');
+      const filterStr = buildCombinedCssFilter();
+      const transformStr = state.mirror ? 'scaleX(-1)' : 'scaleX(1)';
+
+      video.style.filter = filterStr;
+      video.style.transform = transformStr;
+    }
+
+    function toggleMirror() {
+      state.mirror = !state.mirror;
+      const btn = document.getElementById('mirrorToggleBtn');
+      btn.querySelector('span').textContent = `Lật gương: ${state.mirror ? 'Bật' : 'Tắt'}`;
+      btn.classList.toggle('active-pill', state.mirror);
+      applyLiveVideoStyles();
+    }
+
+    function togglePoseGuide() {
+      state.poseGuideIndex = (state.poseGuideIndex + 1) % (POSE_GUIDES.length + 1);
+      const overlay = document.getElementById('poseGuideOverlay');
+      const svgBox = document.getElementById('poseGuideSvgContainer');
+      const textBox = document.getElementById('poseGuideText');
+      const poseBtn = document.getElementById('poseToggleBtn');
+
+      if (state.poseGuideIndex === POSE_GUIDES.length) {
+        state.poseGuideIndex = -1;
+        overlay.classList.add('hidden');
+        if (poseBtn) poseBtn.classList.remove('active-pill');
+        showToast('Đã tắt khung gợi ý tạo dáng');
+      } else {
+        const guide = POSE_GUIDES[state.poseGuideIndex];
+        svgBox.innerHTML = guide.svg;
+        textBox.textContent = guide.title;
+        overlay.classList.remove('hidden');
+        if (poseBtn) poseBtn.classList.add('active-pill');
+      }
+    }
+
+    function setCountdownSeconds(sec) {
+      state.countdownSeconds = sec;
+      document.querySelectorAll('.timer-btn').forEach(btn => {
+        const bSec = Number(btn.getAttribute('data-sec'));
+        if (bSec === sec) {
+          btn.className = 'timer-btn active-timer px-2.5 py-1 text-xs font-bold';
+        } else {
+          btn.className = 'timer-btn px-2.5 py-1 text-xs font-bold';
+        }
+      });
+    }
+
+    function toggleAutoShootMode() {
+      state.autoShoot = !state.autoShoot;
+      const label = document.getElementById('autoModeLabel');
+      label.textContent = state.autoShoot ? 'Tự động liên tiếp' : 'Chụp từng tấm';
+      updateCaptureButtonState();
+      showToast(state.autoShoot ? '⚡ Chế độ: Chụp tự động liên tiếp' : '📸 Chế độ: Chụp từng tấm');
+    }
+
+    function updateBrightness(val) {
+      state.brightness = Number(val);
+      document.getElementById('brightnessVal').textContent = `${val}%`;
+      applyLiveVideoStyles();
+    }
+
+    function renderFilterBar() {
+      const bar = document.getElementById('filterBar');
+      bar.innerHTML = FILTERS.map(f => {
+        const active = f.id === state.selectedFilterId;
+        return `
+          <button
+            onclick="selectFilter('${f.id}')"
+            class="theme-pill-btn flex-shrink-0 px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 ${
+              active ? 'active-pill scale-105' : ''
+            }"
+          >
+            <span>${f.icon}</span>
+            <span>${f.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectFilter(filterId) {
+      state.selectedFilterId = filterId;
+      const f = getCurrentFilter();
+      document.getElementById('activeFilterBadge').innerHTML = `<i class="fa-solid fa-sparkles text-pinky-300"></i><span>Màu: ${f.name}</span>`;
+      renderFilterBar();
+      applyLiveVideoStyles();
+    }
+
+    /**************************************************************
+     * 8. PHOTO CAPTURE WORKFLOW & FILE UPLOAD
+     **************************************************************/
+    function updateCaptureButtonState() {
+      if (!isStep1Complete()) return;
+      const layout = getCurrentLayout();
+      const filledCount = state.photos.filter(p => p !== null).length;
+      const btnLabel = document.getElementById('captureBtnLabel');
+      const progressText = document.getElementById('shotProgressText');
+      const retakeBadge = document.getElementById('retakeTargetBadge');
+
+      progressText.textContent = `Đã chụp: ${filledCount} / ${layout.total}`;
+      updateStepProgressionUI();
+
+      if (state.retakeSlotIndex !== null) {
+        retakeBadge.textContent = `Đang chụp lại Ảnh #${state.retakeSlotIndex + 1}`;
+        retakeBadge.classList.remove('hidden');
+        btnLabel.textContent = `Chụp Lại Ảnh #${state.retakeSlotIndex + 1}`;
+        return;
+      } else {
+        retakeBadge.classList.add('hidden');
+      }
+
+      const remaining = layout.total - filledCount;
+      if (remaining === 0) {
+        btnLabel.textContent = 'Chụp Lại Bộ Mới 📸';
+      } else if (state.autoShoot && remaining > 1) {
+        btnLabel.textContent = `Chụp Tự Động (${remaining} Tấm)`;
+      } else {
+        const nextIdx = state.photos.findIndex(p => p === null);
+        btnLabel.textContent = `Chụp Tấm #${nextIdx + 1}`;
+      }
+    }
+
+    async function handleCaptureClick() {
+      if (state.isCapturing) return;
+
+      if (!state.cameraActive || !state.stream) {
+        showToast('Webcam chưa được bật! Hãy bật Webcam hoặc bấm "Tải ảnh lên" để chọn ảnh từ máy nhé.', '📷');
+        initCamera();
+        return;
+      }
+
+      const layout = getCurrentLayout();
+
+      // If retaking a single specific slot
+      if (state.retakeSlotIndex !== null) {
+        state.isCapturing = true;
+        await runCountdownAndSnap(state.retakeSlotIndex);
+        state.retakeSlotIndex = null;
+        state.isCapturing = false;
+        updateCaptureButtonState();
+        return;
+      }
+
+      // If all slots are already full, reset slots and shoot fresh
+      const allFull = state.photos.every(p => p !== null);
+      if (allFull) {
+        state.photos = new Array(layout.total).fill(null);
+        renderCapturedSlots();
+        updateStepProgressionUI();
+      }
+
+      state.isCapturing = true;
+      const captureBtn = document.getElementById('captureBtn');
+      captureBtn.disabled = true;
+      captureBtn.classList.add('opacity-70');
+
+      if (state.autoShoot) {
+        for (let i = 0; i < layout.total; i++) {
+          if (state.photos[i] === null) {
+            await runCountdownAndSnap(i);
+            if (i < layout.total - 1) {
+              await sleep(550);
+            }
+          }
+        }
+        showToast('🎉 Đã chụp đủ bộ ảnh! Bấm "Trang Trí Khung & In Ảnh" để tiếp tục nhé!');
+      } else {
+        const nextIndex = state.photos.findIndex(p => p === null);
+        if (nextIndex !== -1) {
+          await runCountdownAndSnap(nextIndex);
+        }
+      }
+
+      state.isCapturing = false;
+      captureBtn.disabled = false;
+      captureBtn.classList.remove('opacity-70');
+      updateCaptureButtonState();
+    }
+
+    async function runCountdownAndSnap(slotIndex) {
+      const overlay = document.getElementById('countdownOverlay');
+      const numEl = document.getElementById('countdownNumber');
+      const subEl = document.getElementById('countdownSubtext');
+
+      if (state.countdownSeconds > 0) {
+        overlay.classList.remove('hidden');
+        subEl.textContent = `Chuẩn bị chụp Tấm #${slotIndex + 1}... ✨`;
+
+        for (let s = state.countdownSeconds; s >= 1; s--) {
+          numEl.textContent = s;
+          numEl.classList.remove('count-pop');
+          void numEl.offsetWidth; // Reflow for animation
+          numEl.classList.add('count-pop');
+          playBeepSound(s === 1);
+          await sleep(950);
+        }
+        overlay.classList.add('hidden');
+      }
+
+      // Trigger Flash & Shutter
+      const flash = document.getElementById('flashOverlay');
+      flash.classList.remove('hidden', 'flash-active');
+      void flash.offsetWidth;
+      flash.classList.add('flash-active');
+      playShutterSound();
+
+      // Capture frame to canvas
+      const dataUrl = captureCurrentFrameDataUrl();
+      state.photos[slotIndex] = dataUrl;
+      renderCapturedSlots();
+      updateCaptureButtonState();
+
+      setTimeout(() => {
+        flash.classList.add('hidden');
+      }, 460);
+    }
+
+    function captureCurrentFrameDataUrl() {
+      const offCanvas = document.createElement('canvas');
+      const targetW = 960;
+      const targetH = 720; // 4:3 standard
+      offCanvas.width = targetW;
+      offCanvas.height = targetH;
+      const ctx = offCanvas.getContext('2d');
+
+      ctx.save();
+      ctx.filter = buildCombinedCssFilter();
+
+      if (state.mirror) {
+        ctx.translate(targetW, 0);
+        ctx.scale(-1, 1);
+      }
+
+      if (state.stream) {
+        const video = document.getElementById('webcamVideo');
+        const vw = video.videoWidth || 960;
+        const vh = video.videoHeight || 720;
+        // Center crop to 4:3
+        const targetAspect = targetW / targetH;
+        const videoAspect = vw / vh;
+        let sx = 0, sy = 0, sw = vw, sh = vh;
+        if (videoAspect > targetAspect) {
+          sw = vh * targetAspect;
+          sx = (vw - sw) / 2;
+        } else {
+          sh = vw / targetAspect;
+          sy = (vh - sh) / 2;
+        }
+        ctx.drawImage(video, sx, sy, sw, sh, 0, 0, targetW, targetH);
+      }
+
+      ctx.restore();
+      return offCanvas.toDataURL('image/jpeg', 0.94);
+    }
+
+    function renderCapturedSlots() {
+      const container = document.getElementById('capturedSlotsContainer');
+      if (!container) return;
+
+      const slotsToRender = state.photos.length > 0 ? state.photos : [null, null, null, null];
+
+      container.innerHTML = slotsToRender.map((photoData, idx) => {
+        const isRetakeTarget = state.retakeSlotIndex === idx;
+        if (photoData) {
+          return `
+            <div class="relative group rounded-2xl overflow-hidden border-2 ${isRetakeTarget ? 'border-pinky-500 ring-2 ring-pinky-300' : 'border-pinky-200'} bg-pinky-50 aspect-[4/3] shadow-sm">
+              <img src="${photoData}" alt="Ảnh ${idx + 1}" class="w-full h-full object-cover" />
+              <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/55 text-white text-[10px] font-bold">
+                #${idx + 1}
+              </span>
+              <!-- Hover / Tap Actions (Always visible at bottom on Mobile, Hover on Desktop) -->
+              <div class="slot-touch-actions absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-2">
+                <div class="flex items-center gap-1 w-full">
+                  <button
+                    onclick="selectSlotForRetake(${idx})"
+                    class="flex-1 py-1.5 px-1.5 rounded-full cute-btn-primary text-[10px] sm:text-[11px] font-bold flex items-center justify-center gap-1 shadow"
+                  >
+                    <i class="fa-solid fa-camera-rotate"></i> <span>Chụp lại</span>
+                  </button>
+                  <button
+                    onclick="triggerSingleSlotUpload(${idx})"
+                    class="flex-1 py-1.5 px-1.5 rounded-full cute-btn-secondary text-[10px] sm:text-[11px] font-bold flex items-center justify-center gap-1 shadow"
+                  >
+                    <i class="fa-solid fa-upload"></i> <span>Thay ảnh</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div
+              onclick="selectSlotForRetake(${idx})"
+              class="photo-slot-empty ${isRetakeTarget ? 'retake-active' : ''} cursor-pointer rounded-2xl aspect-[4/3] flex flex-col items-center justify-center p-2 text-center"
+            >
+              <span class="photo-slot-badge w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mb-1.5 shadow-sm">
+                ${idx + 1}
+              </span>
+              <span class="text-xs font-bold text-[#ff7eb3]">
+                ${isRetakeTarget ? 'Sẵn sàng chụp...' : 'Trống'}
+              </span>
+              <button
+                onclick="event.stopPropagation(); triggerSingleSlotUpload(${idx})"
+                class="mt-1 text-[11px] text-gray-500 hover:text-pinky-500 underline"
+              >
+                + Tải ảnh lên
+              </button>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function selectSlotForRetake(slotIdx) {
+      if (state.retakeSlotIndex === slotIdx) {
+        state.retakeSlotIndex = null;
+      } else {
+        state.retakeSlotIndex = slotIdx;
+        showToast(`📸 Bấm nút Chụp để chụp lại Tấm #${slotIdx + 1}`);
+      }
+      renderCapturedSlots();
+      updateCaptureButtonState();
+    }
+
+    function clearAllPhotos() {
+      const layout = getCurrentLayout();
+      state.photos = new Array(layout.total).fill(null);
+      state.retakeSlotIndex = null;
+      renderCapturedSlots();
+      updateCaptureButtonState();
+      showToast('🗑️ Đã xoá tất cả ảnh đã chụp');
+    }
+
+    function triggerMultiUpload() {
+      document.getElementById('multiUploadInput').click();
+    }
+
+    function triggerSingleSlotUpload(slotIdx) {
+      state.uploadTargetSlotIndex = slotIdx;
+      document.getElementById('singleSlotUploadInput').click();
+    }
+
+    function handleMultiFileUpload(event) {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
+      const layout = getCurrentLayout();
+
+      files.slice(0, layout.total).forEach((file, i) => {
+        readAndCropImageFile(file, (dataUrl) => {
+          // Put in first empty slot or overwrite by index
+          const emptyIdx = state.photos.findIndex(p => p === null);
+          const targetIdx = emptyIdx !== -1 ? emptyIdx : i;
+          if (targetIdx < layout.total) {
+            state.photos[targetIdx] = dataUrl;
+            renderCapturedSlots();
+            updateCaptureButtonState();
+          }
+        });
+      });
+      event.target.value = '';
+      showToast('🖼️ Đã tải ảnh từ máy lên thành công!');
+    }
+
+    function handleSingleSlotFileUpload(event) {
+      const file = (event.target.files || [])[0];
+      if (!file || state.uploadTargetSlotIndex === null) return;
+      const slotIdx = state.uploadTargetSlotIndex;
+      readAndCropImageFile(file, (dataUrl) => {
+        state.photos[slotIdx] = dataUrl;
+        renderCapturedSlots();
+        updateCaptureButtonState();
+        showToast(`🖼️ Đã cập nhật Ảnh #${slotIdx + 1}`);
+      });
+      event.target.value = '';
+    }
+
+    function readAndCropImageFile(file, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const w = 960, h = 720;
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.filter = buildCombinedCssFilter();
+
+          const targetAspect = w / h;
+          const imgAspect = img.width / img.height;
+          let sx = 0, sy = 0, sw = img.width, sh = img.height;
+          if (imgAspect > targetAspect) {
+            sw = img.height * targetAspect;
+            sx = (img.width - sw) / 2;
+          } else {
+            sh = img.width / targetAspect;
+          sy = (img.height - sh) / 2;
+        }
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
+          callback(canvas.toDataURL('image/jpeg', 0.94));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /**************************************************************
+     * 9. STEP 3: CUSTOMIZATION PALETTES & COMPOSITE STRIP ENGINE
+     **************************************************************/
+    function renderCustomizationPalettes() {
+      // 1. Solid Colors (Circular color swatches like Version 2)
+      const solidContainer = document.getElementById('solidColorSwatches');
+      solidContainer.innerHTML = SOLID_COLORS.map(c => {
+        const isSelected = state.frameFillType === 'solid' && state.frameSolidColor.toLowerCase() === c.hex.toLowerCase();
+        return `
+          <button
+            onclick="setFrameSolidColor('${c.hex}', '${c.text}')"
+            class="w-9 h-9 rounded-full border-2 transition transform hover:scale-110 shadow-sm flex items-center justify-center ${
+              isSelected ? 'border-pinky-500 scale-110 ring-2 ring-pinky-300' : 'border-pinky-200'
+            }"
+            style="background-color: ${c.hex};"
+            title="${c.name}"
+          >
+            ${isSelected ? `<i class="fa-solid fa-check text-xs" style="color: ${c.text};"></i>` : ''}
+          </button>
+        `;
+      }).join('');
+
+      // 2. Gradients (Full gradient background pills like Version 2 screenshot)
+      const gradContainer = document.getElementById('gradientColorSwatches');
+      gradContainer.innerHTML = GRADIENTS.map((g, idx) => {
+        const isSelected = state.frameFillType === 'gradient' && state.frameGradientIndex === idx;
+        return `
+          <button
+            onclick="setFrameGradient(${idx})"
+            class="py-2.5 px-3 rounded-full text-xs font-bold border-2 transition transform hover:-translate-y-0.5 shadow-sm ${
+              isSelected ? 'border-pinky-500 ring-2 ring-pinky-300 scale-[1.02]' : 'border-white/70'
+            }"
+            style="background: linear-gradient(135deg, ${g.stops.join(', ')}); color: ${g.text};"
+          >
+            ${g.name}
+          </button>
+        `;
+      }).join('');
+
+      // 3. Patterns (Dark plum pill buttons with pink active pill like Version 2 screenshot)
+      const patContainer = document.getElementById('patternButtonsGrid');
+      patContainer.innerHTML = PATTERNS.map(p => {
+        const active = p.id === state.patternId;
+        return `
+          <button
+            onclick="setFramePattern('${p.id}')"
+            data-pattern="${p.id}"
+            class="pattern-btn theme-pill-btn px-3 py-2.5 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 ${
+              active ? 'active-pill' : ''
+            }"
+          >
+            <span>${p.icon}</span>
+            <span>${p.name}</span>
+          </button>
+        `;
+      }).join('');
+
+      // 4. Emoji Stickers
+      const emojiContainer = document.getElementById('emojiStickerPalette');
+      emojiContainer.innerHTML = EMOJI_STICKERS.map(em => `
+        <button
+          onclick="addStickerToStrip({ type: 'emoji', content: '${em}' })"
+          class="theme-pill-btn h-11 rounded-2xl hover:scale-110 transition flex items-center justify-center text-2xl shadow-sm"
+        >
+          ${em}
+        </button>
+      `).join('');
+
+      // 5. Badge Stickers (Colorful pills matching Version 2 screenshot)
+      const badgeContainer = document.getElementById('badgeStickerPalette');
+      badgeContainer.innerHTML = BADGE_STICKERS.map((b, idx) => `
+        <button
+          onclick="addBadgeStickerByIndex(${idx})"
+          class="px-4 py-1.5 rounded-full text-xs font-bold border border-pinky-200 shadow-sm hover:scale-105 transition"
+          style="background:${b.bg}; color:${b.color};"
+        >
+          ${b.text}
+        </button>
+      `).join('');
+    }
+
+    function setFrameSolidColor(hex, suggestedTextHex = null) {
+      state.frameFillType = 'solid';
+      state.frameSolidColor = hex;
+      state.frameGradientIndex = -1;
+      document.getElementById('customFrameColorPicker').value = hex;
+      if (suggestedTextHex) {
+        state.captionColor = suggestedTextHex;
+        document.getElementById('captionColorInput').value = suggestedTextHex;
+      }
+      renderCustomizationPalettes();
+      renderCompositePhotoStrip();
+    }
+
+    function setFrameGradient(gradIdx) {
+      const g = GRADIENTS[gradIdx];
+      state.frameFillType = 'gradient';
+      state.frameGradientIndex = gradIdx;
+      state.frameGradientStops = g.stops;
+      state.captionColor = g.text;
+      document.getElementById('captionColorInput').value = g.text;
+      renderCustomizationPalettes();
+      renderCompositePhotoStrip();
+    }
+
+    function setFramePattern(patternId) {
+      state.patternId = patternId;
+      document.querySelectorAll('.pattern-btn').forEach(btn => {
+        const pid = btn.getAttribute('data-pattern');
+        if (pid === patternId) {
+          btn.className = 'pattern-btn theme-pill-btn active-pill px-3 py-2 text-xs font-bold flex items-center justify-center gap-1.5';
+        } else {
+          btn.className = 'pattern-btn theme-pill-btn px-3 py-2 text-xs font-bold flex items-center justify-center gap-1.5';
+        }
+      });
+      renderCompositePhotoStrip();
+    }
+
+    function updatePhotoCornerRadius(val) {
+      state.cornerRadius = Number(val);
+      document.getElementById('cornerRadiusLabel').textContent = `${val}px`;
+      renderCompositePhotoStrip();
+    }
+
+    function toggleInnerPhotoBorder(checked) {
+      state.innerWhiteBorder = checked;
+      renderCompositePhotoStrip();
+    }
+
+    function setCaptionFont(fontName) {
+      state.captionFont = fontName;
+      document.querySelectorAll('.font-btn').forEach(btn => {
+        if (btn.getAttribute('data-font') === fontName) {
+          btn.className = 'font-btn theme-pill-btn active-pill px-3 py-1 rounded-full text-xs font-bold';
+        } else {
+          btn.className = 'font-btn theme-pill-btn px-3 py-1 rounded-full text-xs font-bold';
+        }
+      });
+      renderCompositePhotoStrip();
+    }
+
+    function updateCaptionSettings() {
+      state.captionTitle = document.getElementById('captionTitleInput').value;
+      state.captionSubtitle = document.getElementById('captionSubInput').value;
+      state.captionColor = document.getElementById('captionColorInput').value;
+      state.showDate = document.getElementById('showDateCheckbox').checked;
+      renderCompositePhotoStrip();
+    }
+
+    /**************************************************************
+     * 10. HIGH-DPI PHOTO STRIP CANVAS RENDERER
+     **************************************************************/
+    // Loaded HTMLImageElement cache so redrawing is instant
+    const imageCache = {};
+    function loadCachedImage(src) {
+      return new Promise((resolve) => {
+        if (!src) return resolve(null);
+        if (imageCache[src] && imageCache[src].complete) {
+          return resolve(imageCache[src]);
+        }
+        const img = new Image();
+        img.onload = () => {
+          imageCache[src] = img;
+          resolve(img);
+        };
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    async function renderCompositePhotoStrip(includeStickersOnCanvas = false) {
+      const canvas = document.getElementById('photoStripCanvas');
+      const ctx = canvas.getContext('2d');
+      const layout = getCurrentLayout();
+
+      // Calculate crisp High-DPI dimensions
+      const slotW = layout.cols === 1 ? 420 : 320;
+      const slotH = Math.round(slotW / layout.aspect); // 4:3 -> 315 or 240
+      const padOuter = 38;
+      const gap = 22;
+      const headerH = 26;
+      const footerH = 145;
+
+      const totalW = padOuter * 2 + layout.cols * slotW + (layout.cols - 1) * gap;
+      const totalH = padOuter + headerH + layout.rows * slotH + (layout.rows - 1) * gap + footerH;
+
+      canvas.width = totalW;
+      canvas.height = totalH;
+
+      // 1. Draw Frame Base Color or Gradient
+      if (state.frameFillType === 'gradient') {
+        const grad = ctx.createLinearGradient(0, 0, totalW, totalH);
+        const stops = state.frameGradientStops;
+        stops.forEach((s, idx) => grad.addColorStop(idx / (stops.length - 1), s));
+        ctx.fillStyle = grad;
+      } else {
+        ctx.fillStyle = state.frameSolidColor;
+      }
+      ctx.fillRect(0, 0, totalW, totalH);
+
+      // 2. Draw Frame Pattern Overlay
+      drawFramePattern(ctx, totalW, totalH, state.patternId);
+
+      // 3. Draw Each Photo Slot
+      const loadedImages = await Promise.all(state.photos.map(src => loadCachedImage(src)));
+
+      for (let r = 0; r < layout.rows; r++) {
+        for (let c = 0; c < layout.cols; c++) {
+          const idx = r * layout.cols + c;
+          const x = padOuter + c * (slotW + gap);
+          const y = padOuter + headerH + r * (slotH + gap);
+
+          // Subtle drop shadow under each slot
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.14)';
+          ctx.shadowBlur = 12;
+          ctx.shadowOffsetY = 4;
+
+          drawRoundedRectPath(ctx, x, y, slotW, slotH, state.cornerRadius);
+          ctx.fillStyle = '#fff0f6';
+          ctx.fill();
+          ctx.restore();
+
+          // Clip rounded rectangle and draw photo
+          ctx.save();
+          drawRoundedRectPath(ctx, x, y, slotW, slotH, state.cornerRadius);
+          ctx.clip();
+
+          const img = loadedImages[idx];
+          if (img) {
+            ctx.drawImage(img, x, y, slotW, slotH);
+          } else {
+            ctx.fillStyle = '#ffd6e7';
+            ctx.fillRect(x, y, slotW, slotH);
+          }
+          ctx.restore();
+
+          // Optional crisp inner white border
+          if (state.innerWhiteBorder) {
+            ctx.save();
+            drawRoundedRectPath(ctx, x, y, slotW, slotH, state.cornerRadius);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+      }
+
+      // 4. Draw Footer Caption, Subtitle & Date Stamp
+      const footerCenterY = totalH - footerH + 48;
+      ctx.save();
+      ctx.fillStyle = state.captionColor;
+      ctx.textAlign = 'center';
+
+      // Main Title
+      const titleFontSize = state.captionFont === 'Pacifico' ? 34 : 32;
+      ctx.font = `bold ${titleFontSize}px "${state.captionFont}", sans-serif`;
+      ctx.fillText(state.captionTitle || 'Photobooth 💕', totalW / 2, footerCenterY);
+
+      // Subtitle
+      if (state.captionSubtitle) {
+        ctx.font = `600 17px "Quicksand", sans-serif`;
+        ctx.globalAlpha = 0.88;
+        ctx.fillText(state.captionSubtitle, totalW / 2, footerCenterY + 32);
+      }
+
+      // Date Stamp
+      if (state.showDate) {
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yyyy = now.getFullYear();
+        ctx.font = `700 13px "Quicksand", monospace`;
+        ctx.globalAlpha = 0.72;
+        ctx.fillText(`${dd}.${mm}.${yyyy} • LIFE4CUTS STUDIO`, totalW / 2, footerCenterY + 60);
+      }
+      ctx.restore();
+
+      // 5. If exporting to PNG, composite all DOM stickers directly onto the canvas
+      if (includeStickersOnCanvas && state.stickers.length > 0) {
+        const overlayEl = document.getElementById('stickerOverlayLayer');
+        const domRect = overlayEl.getBoundingClientRect();
+        const scaleX = totalW / (domRect.width || totalW);
+        const scaleY = totalH / (domRect.height || totalH);
+
+        state.stickers.forEach(st => {
+          ctx.save();
+          const cx = st.x * scaleX;
+          const cy = st.y * scaleY;
+          ctx.translate(cx, cy);
+          ctx.rotate((st.rotate * Math.PI) / 180);
+          ctx.scale(st.scale, st.scale);
+
+          if (st.type === 'emoji') {
+            ctx.font = `${Math.round(44 * scaleX)}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(st.content, 0, 0);
+          } else if (st.type === 'badge') {
+            const fontPx = Math.round(16 * scaleX);
+            ctx.font = `bold ${fontPx}px "Quicksand", sans-serif`;
+            const textMetrics = ctx.measureText(st.text);
+            const bw = textMetrics.width + 28 * scaleX;
+            const bh = 32 * scaleY;
+            drawRoundedRectPath(ctx, -bw / 2, -bh / 2, bw, bh, bh / 2);
+            ctx.fillStyle = st.bg;
+            ctx.fill();
+            ctx.lineWidth = 2 * scaleX;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+
+            ctx.fillStyle = st.color;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(st.text, 0, 1);
+          }
+          ctx.restore();
+        });
+      }
+    }
+
+    function drawRoundedRectPath(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    function drawFramePattern(ctx, w, h, patternId) {
+      ctx.save();
+      if (patternId === 'dots') {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        const spacing = 34;
+        for (let y = 16; y < h; y += spacing) {
+          for (let x = 16; x < w; x += spacing) {
+            const offset = (Math.floor(y / spacing) % 2) * (spacing / 2);
+            ctx.beginPath();
+            ctx.arc(x + offset, y, 6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else if (patternId === 'checkered') {
+        const size = 28;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+        for (let y = 0; y < h; y += size) {
+          for (let x = 0; x < w; x += size) {
+            if ((Math.floor(x / size) + Math.floor(y / size)) % 2 === 0) {
+              ctx.fillRect(x, y, size, size);
+            }
+          }
+        }
+      } else if (patternId === 'hearts' || patternId === 'stars' || patternId === 'sakura') {
+        const symbol = patternId === 'hearts' ? '💗' : patternId === 'stars' ? '⭐' : '🌸';
+        ctx.font = '20px sans-serif';
+        ctx.globalAlpha = 0.42;
+        const step = 56;
+        for (let y = 24; y < h; y += step) {
+          for (let x = 20; x < w; x += step) {
+            const shift = (Math.floor(y / step) % 2) * 26;
+            ctx.fillText(symbol, x + shift, y);
+          }
+        }
+      } else if (patternId === 'film') {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+        const holeW = 14, holeH = 20, gap = 34;
+        for (let y = 18; y < h - 20; y += gap) {
+          drawRoundedRectPath(ctx, 10, y, holeW, holeH, 4);
+          ctx.fill();
+          drawRoundedRectPath(ctx, w - 10 - holeW, y, holeW, holeH, 4);
+          ctx.fill();
+        }
+      } else if (patternId === 'y2k') {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.38)';
+        ctx.lineWidth = 1.5;
+        const step = 40;
+        for (let x = 0; x < w; x += step) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+        }
+        for (let y = 0; y < h; y += step) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+        ctx.font = '22px sans-serif';
+        ctx.globalAlpha = 0.65;
+        for (let y = 35; y < h; y += 95) {
+          ctx.fillText('✦', 14, y);
+          ctx.fillText('✦', w - 30, y + 40);
+        }
+      }
+      ctx.restore();
+    }
+
+    /**************************************************************
+     * 11. INTERACTIVE DRAGGABLE / RESIZABLE STICKERS
+     **************************************************************/
+    function addBadgeStickerByIndex(idx) {
+      const b = BADGE_STICKERS[idx];
+      addStickerToStrip({
+        type: 'badge',
+        text: b.text,
+        bg: b.bg,
+        color: b.color
+      });
+    }
+
+    function addStickerToStrip(stickerData) {
+      const overlay = document.getElementById('stickerOverlayLayer');
+      const rect = overlay.getBoundingClientRect();
+      const w = rect.width || 280;
+      const h = rect.height || 600;
+
+      const id = 'st_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+      const newSticker = {
+        id,
+        type: stickerData.type,
+        content: stickerData.content || '',
+        text: stickerData.text || '',
+        bg: stickerData.bg || '#ff85c0',
+        color: stickerData.color || '#ffffff',
+        x: w * (0.25 + Math.random() * 0.5),
+        y: h * (0.18 + Math.random() * 0.65),
+        scale: 1,
+        rotate: Math.round((Math.random() - 0.5) * 20)
+      };
+
+      state.stickers.push(newSticker);
+      state.selectedStickerId = id;
+      renderStickerDOMLayer();
+      playBeepSound(true);
+    }
+
+    function addRandomCuteStickers() {
+      const overlay = document.getElementById('stickerOverlayLayer');
+      const rect = overlay.getBoundingClientRect();
+      const w = rect.width || 280;
+      const h = rect.height || 600;
+
+      const picks = ['🎀', '💖', '✨', '🌸', '🐰', '🍒'];
+      picks.forEach((em, idx) => {
+        const sideX = idx % 2 === 0 ? w * 0.12 : w * 0.88;
+        const posY = h * (0.12 + idx * 0.14);
+        state.stickers.push({
+          id: 'st_rand_' + Date.now() + '_' + idx,
+          type: 'emoji',
+          content: em,
+          x: sideX,
+          y: posY,
+          scale: 1,
+          rotate: (idx % 2 === 0 ? -12 : 12)
+        });
+      });
+      renderStickerDOMLayer();
+      showToast('✨ Đã thêm bộ nhãn dán dễ thương!');
+    }
+
+    function clearAllStickers() {
+      state.stickers = [];
+      state.selectedStickerId = null;
+      renderStickerDOMLayer();
+      showToast('🗑️ Đã xoá hết nhãn dán');
+    }
+
+    function renderStickerDOMLayer() {
+      const overlay = document.getElementById('stickerOverlayLayer');
+      const toolbar = document.getElementById('activeStickerToolbar');
+
+      toolbar.classList.toggle('hidden', !state.selectedStickerId);
+
+      overlay.innerHTML = state.stickers.map(st => {
+        const isSelected = st.id === state.selectedStickerId;
+        const innerHtml = st.type === 'emoji'
+          ? `<span class="text-4xl block leading-none select-none">${st.content}</span>`
+          : `<span class="px-3 py-1 rounded-full text-xs font-bold border-2 border-white shadow-md whitespace-nowrap block" style="background:${st.bg}; color:${st.color};">${st.text}</span>`;
+
+        return `
+          <div
+            data-sticker-id="${st.id}"
+            onpointerdown="startStickerDrag(event, '${st.id}')"
+            class="sticker-item ${isSelected ? 'selected' : ''}"
+            style="left:${st.x}px; top:${st.y}px; transform: translate(-50%, -50%) rotate(${st.rotate}deg) scale(${st.scale});"
+          >
+            ${innerHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    let dragInfo = null;
+    function startStickerDrag(event, stickerId) {
+      event.stopPropagation();
+      state.selectedStickerId = stickerId;
+      renderStickerDOMLayer();
+
+      const st = state.stickers.find(s => s.id === stickerId);
+      if (!st) return;
+
+      const overlay = document.getElementById('stickerOverlayLayer');
+      const rect = overlay.getBoundingClientRect();
+
+      dragInfo = {
+        stickerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        origX: st.x,
+        origY: st.y,
+        boundsW: rect.width,
+        boundsH: rect.height
+      };
+
+      window.addEventListener('pointermove', onStickerPointerMove);
+      window.addEventListener('pointerup', onStickerPointerUp);
+    }
+
+    function onStickerPointerMove(event) {
+      if (!dragInfo) return;
+      const st = state.stickers.find(s => s.id === dragInfo.stickerId);
+      if (!st) return;
+
+      const dx = event.clientX - dragInfo.startX;
+      const dy = event.clientY - dragInfo.startY;
+      st.x = Math.max(10, Math.min(dragInfo.boundsW - 10, dragInfo.origX + dx));
+      st.y = Math.max(10, Math.min(dragInfo.boundsH - 10, dragInfo.origY + dy));
+
+      const el = document.querySelector(`[data-sticker-id="${st.id}"]`);
+      if (el) {
+        el.style.left = `${st.x}px`;
+        el.style.top = `${st.y}px`;
+      }
+    }
+
+    function onStickerPointerUp() {
+      dragInfo = null;
+      window.removeEventListener('pointermove', onStickerPointerMove);
+      window.removeEventListener('pointerup', onStickerPointerUp);
+    }
+
+    function handleStageBackgroundClick(event) {
+      if (event.target.id === 'stickerOverlayLayer') {
+        state.selectedStickerId = null;
+        renderStickerDOMLayer();
+      }
+    }
+
+    function transformSelectedSticker(prop, delta) {
+      const st = state.stickers.find(s => s.id === state.selectedStickerId);
+      if (!st) return;
+      if (prop === 'scale') {
+        st.scale = Math.max(0.45, Math.min(2.6, st.scale + delta));
+      } else if (prop === 'rotate') {
+        st.rotate = (st.rotate + delta) % 360;
+      }
+      renderStickerDOMLayer();
+    }
+
+    function deleteSelectedSticker() {
+      if (!state.selectedStickerId) return;
+      state.stickers = state.stickers.filter(s => s.id !== state.selectedStickerId);
+      state.selectedStickerId = null;
+      renderStickerDOMLayer();
+    }
+
+    /**************************************************************
+     * 12. REALISTIC PHOTO BOOTH PRINTING & PNG EXPORT
+     **************************************************************/
+    async function triggerPhotoBoothPrint() {
+      state.selectedStickerId = null;
+      renderStickerDOMLayer();
+
+      // Render final composite WITH stickers baked onto the high-DPI canvas
+      await renderCompositePhotoStrip(true);
+      const canvas = document.getElementById('photoStripCanvas');
+      const finalDataUrl = canvas.toDataURL('image/png');
+
+      // Re-render clean canvas underneath so interactive DOM stickers aren't doubled
+      await renderCompositePhotoStrip(false);
+
+      // Show Printing Modal Animation
+      const modal = document.getElementById('printingModal');
+      const previewImg = document.getElementById('printedStripPreviewImg');
+      const downloadLink = document.getElementById('downloadStripLink');
+      const titleEl = document.getElementById('printModalTitle');
+      const statusEl = document.getElementById('printModalStatus');
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      const customBaseName = (document.getElementById('customFileNameInput')?.value || '')
+        .trim()
+        .replace(/[\\/:*?"<>|]/g, '-');
+      const finalFileName = customBaseName
+        ? `${customBaseName}.png`
+        : `LTT-Photobooth-${state.selectedLayoutId}-${dateStr}.png`;
+
+      downloadLink.href = finalDataUrl;
+      downloadLink.download = finalFileName;
+
+      previewImg.src = finalDataUrl;
+      previewImg.classList.remove('printing-strip-anim');
+      void previewImg.offsetWidth;
+      previewImg.classList.add('printing-strip-anim');
+
+      titleEl.textContent = '🖨️ Đang in ảnh của bạn...';
+      statusEl.textContent = 'Ảnh đang trượt ra từ khe máy in Hàn Quốc ✨';
+      modal.classList.remove('hidden');
+
+      playShutterSound();
+
+      setTimeout(() => {
+        titleEl.textContent = '🎉 In Ảnh Thành Công!';
+        statusEl.textContent = 'Ảnh đã tự động tải về máy, hoặc bấm nút bên dưới để lưu lại nhé!';
+        playBeepSound(true);
+        // Trigger automatic download
+        downloadLink.click();
+      }, 2400);
+    }
+
+    function closePrintingModal() {
+      document.getElementById('printingModal').classList.add('hidden');
+    }
+
+    /**************************************************************
+     * 12.1. QR CODE GENERATOR FOR MOBILE SCAN
+     ********************************------------------------------*/
+    async function openQrCodeModal() {
+      state.selectedStickerId = null;
+      renderStickerDOMLayer();
+
+      await renderCompositePhotoStrip(true);
+      const canvas = document.getElementById('photoStripCanvas');
+      const dataUrl = canvas.toDataURL('image/png');
+      await renderCompositePhotoStrip(false);
+
+      const modal = document.getElementById('qrCodeModal');
+      const qrImg = document.getElementById('qrCodeImgImage');
+      const qrText = document.getElementById('qrCodeLinkText');
+
+      // Mã hóa DataURL ngắn gọn hoặc truyền link ảnh vào API tạo mã QR công khai (api.qrserver.com)
+      // Lưu ý: Dùng encodeURIComponent với DataURL dài có thể vượt quá giới hạn URL GET,
+      // vì vậy ta hiển thị mã QR dựa trên đường dẫn ảnh trực tiếp hoặc thông báo tải trực tiếp.
+      // Giải pháp tối ưu cho web tĩnh: Mã QR chứa DataURL ảnh trực tiếp (hoặc rút gọn qua URL Object).
+      try {
+        const blob = dataURItoBlob(dataUrl);
+        const blobUrl = URL.createObjectURL(blob);
+        
+        // Gọi API tạo mã QR từ URL blob của ảnh
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(window.location.href)}`;
+        qrImg.src = qrApiUrl;
+        qrText.textContent = "Quét mã để truy cập trang web & tải ảnh";
+      } catch (err) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent("LTT-Photobooth")}`;
+        qrText.textContent = "Quét mã QR Photobooth Hàn Quốc";
+      }
+
+      modal.classList.remove('hidden');
+      playBeepSound(true);
+    }
+
+    function closeQrCodeModal() {
+      document.getElementById('qrCodeModal').classList.add('hidden');
+    }
+
+    function dataURItoBlob(dataURI) {
+      const byteString = atob(dataURI.split(',')[1]);
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mimeString });
+    }
+
+    /**************************************************************
+     * 13. GIF / ANIMATED MOMENT PREVIEW MODAL
+     **************************************************************/
+    async function openGifMomentModal() {
+      const modal = document.getElementById('gifModal');
+      modal.classList.remove('hidden');
+      state.gifFrameIndex = 0;
+      await startGifLoop();
+    }
+
+    async function startGifLoop() {
+      if (state.gifInterval) clearInterval(state.gifInterval);
+      const validPhotos = state.photos.filter(p => p !== null);
+      const images = await Promise.all(validPhotos.map(src => loadCachedImage(src)));
+
+      const canvas = document.getElementById('gifPreviewCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const drawFrame = () => {
+        ctx.fillStyle = state.frameSolidColor || '#ffd6e7';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (images.length > 0) {
+          const img = images[state.gifFrameIndex % images.length];
+          if (img) {
+            drawRoundedRectPath(ctx, 20, 20, canvas.width - 40, canvas.height - 70, 20);
+            ctx.save();
+            ctx.clip();
+            ctx.drawImage(img, 20, 20, canvas.width - 40, canvas.height - 70);
+            ctx.restore();
+          }
+        }
+
+        ctx.fillStyle = state.captionColor || '#c41d7f';
+        ctx.font = 'bold 22px "Pacifico", cursive';
+        ctx.textAlign = 'center';
+        ctx.fillText(state.captionTitle || 'Photobooth 💕', canvas.width / 2, canvas.height - 20);
+
+        state.gifFrameIndex++;
+      };
+
+      drawFrame();
+      state.gifInterval = setInterval(drawFrame, state.gifSpeed);
+    }
+
+    function setGifSpeed(ms) {
+      state.gifSpeed = ms;
+      startGifLoop();
+    }
+
+    function closeGifModal() {
+      if (state.gifInterval) clearInterval(state.gifInterval);
+      document.getElementById('gifModal').classList.add('hidden');
+    }
+
+    /**************************************************************
+     * 14. HELPERS (MODAL & TOAST)
+     **************************************************************/
+    function toggleGuideModal(show) {
+      document.getElementById('guideModal').classList.toggle('hidden', !show);
+    }
+
+    let toastTimer = null;
+    function showToast(msg, icon = '✨') {
+      const box = document.getElementById('toastBox');
+      document.getElementById('toastMessage').textContent = msg;
+      document.getElementById('toastIcon').textContent = icon;
+      box.classList.remove('opacity-0', 'translate-y-3');
+      box.classList.add('opacity-100', 'translate-y-0');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        box.classList.add('opacity-0', 'translate-y-3');
+        box.classList.remove('opacity-100', 'translate-y-0');
+      }, 2800);
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+  </script>
+</body>
+</html>
